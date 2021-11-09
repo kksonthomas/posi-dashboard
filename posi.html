@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Posi Dashboard</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <style>
+        #wrapper #content-wrapper {
+            background-color: #171923;
+            color: #a0a0a0
+        }
+
+        .card {
+            background-color: #1A202C;
+            color: #a0a0a004;
+            border-color: #2e3650;
+        }
+
+        .navbar {
+            background-color: #1A202C!important;
+            color: #a0a0a0;
+        }
+
+        .card-header {
+            background-color: #1A202C;
+            border-bottom: 1px solid #718096;
+        }
+
+        .table {
+            color: #a0a0a0;
+        }
+
+        .table-bordered td, .table-bordered th {
+            border: 1px solid #718096;
+        }
+
+        footer.sticky-footer {
+            background-color: #2D3748;
+            color: #a0a0a0;
+        }
+
+        .table thead th {
+            border-bottom: 2px solid #718096;
+        }
+
+        .table-bordered {
+            border: 1px solid #718096;
+        }
+
+        .form-control , .page-link{
+            background-color: #2D3748;
+            color: #a0a0a0;
+            border: 1px solid #718096;
+        }
+        .form-control:focus, .page-link:hover {
+            background-color: #2D3748;
+            color: #a0a0a0;
+            border: 1px solid #93a7c5;
+        }
+
+        .page-link:hover {
+            background-color: #2D3748;
+            color: #a0a0a0;
+            border: 1px solid #93a7c5;
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #2D3748;
+            color: #5e5e5e;
+            border: #2D3748;
+        }
+
+        .swal2-popup, .swal2-html-container, .swal2-title {
+            background-color: #2D3748!important;
+            color: #dbdbdb!important;
+        }
+        
+        body {
+            background-color: #2D3748;
+        }
+
+        .container-fluid {
+            margin-top: 100px;
+        }
+        
+    </style>
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 fixed-top shadow">
+
+                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="https://app.position.exchange/">
+                        <div class="sidebar-brand-icon rotate-n-15">
+                            <img src='https://app.position.exchange/img/position-coin.svg' />
+                        </div>
+                        <div class="sidebar-brand-text mx-3">Unoffical POSI Dashboard</div>
+                    </a>
+
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input id="txtCustomAddress" type="text" class="form-control border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" onclick="searchAddress()">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" id="txtUserAddress">-</span>
+                                <img class="img-profile rounded-circle"
+                                    src="img/undraw_profile.svg">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-2">Posi Dashboard - <span class="current-address-span"></span></h1>
+
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">POSI Balance</div>
+                                            <div class="h3 mb-0 font-weight-bold " id="txtPosiBalance"> - </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">POSI BUSD Farming</div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Pending Rewards:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtBusdFarmingPendingReward">-</div>
+                                                    <div class="text-xs col-form-label pt-0">($?)</div>                       
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Staked LPs:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtBusdFarmingStakedLPs">-</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtBusdFarmingStakedLPs'
+                                                            data-price-src-unit="POSI_BUSD_LP">?</span>)
+                                                    </div>                    
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Next Harvest Until:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label text-lg" id="txtBusdFarmingRemainingTime">--:--:--</div>            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="btn-group col-12" role="group">
+                                                    <button type="button"  class='btn btn-secondary disabled' disabled onclick=''>Meow</button>
+                                                    <button type="button"  class='btn btn-warning disabled' disabled onclick=''>Unmeow</button>
+                                                    <button type="button"  class='btn btn-success' onclick='harvestBusdFarm()'>Harvest</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">NFT POOL</div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Pending Rewards:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtNftPoolPendingReward">-</div>
+                                                    <div class="text-xs col-form-label pt-0">($?)</div>                       
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Staked Power:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtNftPoolStakedPower">-</div>                       
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Next Harvest Until:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label text-lg" id="txtNftPoolRemainingTime">--:--:--</div>            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="btn-group col-12" role="group">
+                                                    <button type="button"  class='btn btn-success' onclick='harvestNftPool()'>Harvest</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card  shadow h-100 py-2">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Cast NFT - Test your luck!</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <!-- <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Cast NFT</div> -->
+                                            <div class="h5 mb-0 font-weight-bold ">
+                                                <input type="number" class='form-control' id='inputCastNftAmount' min='0' />
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="button"  class='btn btn-success' onclick='castNFT(inputCastNftAmount.value)'>Cast NFT</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Par value of NFTs</div>
+                                            <div class="h5 mb-0 font-weight-bold " id="txtNftTotalAmount"> - </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Paid value of NFTs</div>
+                                            <div class="h5 mb-0 font-weight-bold " id="txtNftTotalPaidAmount"> - </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Unlocked NFT value</div>
+                                            <div class="h5 mb-0 font-weight-bold " id="txtTotalUnlockedAmount"> - </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-unlock fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h3 class="m-0 font-weight-bold text-primary col-6 float-left">NFT Tables</h3>
+                            <div class="col-6 float-right">
+                                <button type="button" class="btn btn-outline-secondary float-right" onclick='nftDataTable.ajax.reload(null, false)'>Refresh</button>
+                            </div>
+                            
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="posiNFT-table" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th class="tokenIdCol">#</th>
+                                            <th class="gradeTitleCol">Name</th>
+                                            <th class="gradeCol">Grade</th>
+                                            <th class="sourceCol">Source</th>
+                                            <th class="buyValueCol">Buy Value (POSI)</th>
+                                            <th class="parValueCol">Par Value (POSI)</th>
+                                            <th class="miningPowerCol">Mining Power (POSI)</th>
+                                            <th class="efficiencyCol">Efficiency(%)</th>
+                                            <th class="unlockDateCol">Unlock Date</th>
+                                            <th class="isStakedCol">Staked</th>
+                                            <th class="isUnlockedCol">Unlocked</th>
+                                            <th class="actionsCol">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; KKson Software 2021</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1-rc.0/web3.min.js" integrity="sha512-+4Gl8sbHe5qD5EQiPtIva4be9TwUmmzgYJUdGbhsLYNegQw4Quda/4QdZpJzx8cHq2s1F4PoIpAnERQ0hHTcNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        window.showSuccessToast = text => {
+            Toast.fire({
+                icon: 'success',
+                title: text
+            })
+        }
+
+        window.showErrorToast = text => {
+            Toast.fire({
+                icon: 'error',
+                title: text
+            })
+        }
+
+        window.showConfirm = (title, text = '') => {
+            return Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true
+            })
+        }
+
+        window.showError = (title, text = '') => {
+            return Swal.fire({
+                title: title,
+                text: text,
+                icon: 'error'
+            })
+        }
+
+
+    </script>
+    <script type="module">
+        import {Posi, PosiNFT} from './js/posi.js'
+        import Utils from './js/utils.js'
+        
+        window.showCastedNFTResult = (posiNFT) => {
+            return Swal.fire({
+                title: `#${posiNFT.tokenId} Grade ${posiNFT.grade} ${posiNFT.gradeTitle}`,
+                html: `
+                    <div><img src='https://app.position.exchange/img/${posiNFT.gradeTitle.toLowerCase()}.png' class='col-6' /><div>
+                    <div>Par: ${Posi.roundCurrency(posiNFT.amount, true)} POSI</div>
+                    <div>Mining Power: ${Posi.roundCurrency(posiNFT.miningPower, true)} POSI</div>
+                    <div>Efficiency: ${Utils.toPercentage(posiNFT.efficiency)}%</div>
+                    <div>Locked days: ${posiNFT.lockedDays} days</div>
+                `
+            })
+        }
+
+        
+        window.posi = new Posi();
+
+        window.updatePriceInfo = async () => {
+            $(".price-reflector").each(function () {
+                let priceSrc = $($(this).data("priceSrc"))
+                let priceSrcUnit = $(this).data("priceSrcUnit")
+                let priceUnit = $(this).data("priceUnit")
+
+                if(!priceUnit) {
+                    priceUnit = "BUSD"
+                }
+
+                let price = '-';
+                
+                try{
+                    let srcPrice = priceSrc.val() ? priceSrc.val() : priceSrc.text().replace(',', '')
+                    price = srcPrice * priceInfo[priceSrcUnit] / priceInfo[priceUnit]
+                } catch(ex) {}
+
+                $(this).text(Utils.isNumber(price) ? Utils.round(price) : '-');
+            })
+        }
+        window.priceInfo = {};
+        (async () => {
+            while(true) {
+                window.priceInfo = await posi.getPriceInfo()
+                window.updatePriceInfo()
+                await Utils.wait(60000)
+            }
+        })()
+
+        window.unstakeNFT = async function(tokenId) {
+            let result = await showConfirm(`Unstake #${tokenId} ?`)
+            if(result.isConfirmed) {
+                try {
+                    await posi.unstakeNFT(tokenId)
+                    showSuccessToast(`#${tokenId} Unstaked`)
+                } catch(ex) {
+                    showErrorToast(ex.message)
+                }
+                nftDataTable.ajax.reload( null, false )
+            }
+        }
+
+        window.stakeNFT = async function(tokenId) {
+            let result = await showConfirm(`Stake #${tokenId} ?`)
+            if(result.isConfirmed) {
+                try {
+                    await posi.stakeNFT(tokenId)
+                    showSuccessToast(`#${tokenId} staked`)
+                } catch(ex) {
+                    showErrorToast(ex.message)
+                }
+                nftDataTable.ajax.reload( null, false )
+            }
+        }
+
+        window.decomposeNFT = async function(tokenId) {
+            let result = await showConfirm(`Decompose #${tokenId} ?`)
+            if(result.isConfirmed) {
+                let result2 = await showConfirm(`Are you sure want to decompose #${tokenId} ?`)
+                if(result2.isConfirmed) {
+                    try {
+                        await posi.decomposeNFT(tokenId)
+                        showSuccessToast(`#${tokenId} decomposed`)
+                    } catch(ex) {
+                        showErrorToast(ex.message)
+                    }
+                    nftDataTable.ajax.reload( null, false )
+                }
+            }
+        }
+
+        window.harvestBusdFarm = async function () {
+            let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.busdFarming.userInfo.nextHarvestUntil))
+            if(remainSecond) {
+                showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
+            } else {
+                let result = await showConfirm(`Harvest BUSD Farm?`)
+                if(result.isConfirmed) {
+                    try {
+                        await posi.harvestBusdFarm(addressInfo.referrer)
+                        showSuccessToast(`BUSD Farm harvested`)
+                    } catch (ex) {
+                        showErrorToast(ex.message)
+                    }
+                    nftDataTable.ajax.reload( null, false )
+                }
+            }
+        }
+
+        window.harvestNftPool = async function () {
+            let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.nft.nextHarvestUntil))
+            if(remainSecond) {
+                showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
+            } else {
+                let result = await showConfirm(`Harvest NFT Pool?`)
+                if(result.isConfirmed) {
+                    try {
+                        await posi.harvestNftPool()
+                        showSuccessToast(`NFT Pool harvested`)
+                    } catch (ex) {
+                        showErrorToast(ex.message)
+                    }
+                    nftDataTable.ajax.reload( null, false )
+                }
+            }
+        }
+
+        window.transferNFT = async function (tokenId) {
+            let to = prompt(`Transfer #${tokenId} to address:`)
+            if(to && (await showConfirm(`Confirm transfer #${tokenId} to ${to} ?`)).isConfirmed) {
+                try{
+                    await posi.safeTransferNFT(posi.userAddress, to, tokenId)
+                    showSuccessToast(`Transferred #${tokenId} to ${to}`)
+                } catch(ex) {
+                    showErrorToast(ex.message)
+                }
+
+                nftDataTable.ajax.reload( null, false )
+            }
+        }
+
+
+        window.searchAddress = function () {
+            nftDataTable.ajax.reload()
+        }
+
+        window.castNFT = async function(amount) {
+            if(amount <= 0) {
+                showError("Cast NFT amount must greater than zero!!!")
+                return
+            }
+            if((await showConfirm(`Cast NFT with ${amount} POSI ?`)).isConfirmed) {
+                try {
+                    await posi.castNFT(amount)
+                    let addressInfo = await posi.getAddressInfo(posi.userAddress)
+                    let nftList = await posi.getNftList(addressInfo)                          
+                    let maxTokenId = Math.max(...nftList.map(x=>x.tokenId))
+                    let castedNFT = nftList.find(x=>x.tokenId = maxTokenId)
+                    showCastedNFTResult(castedNFT)
+                } catch (ex) {
+                    showErrorToast(ex.message)
+                }
+                nftDataTable.ajax.reload( null, false )
+            }
+        }
+        
+        $(() => {
+            (async () => {
+                
+                if(await posi.ethEnabled()) {
+                    $("#txtUserAddress").text(`${Utils.maskAddress(posi.userAddress)}`)
+                    window.nftDataTable = $("#posiNFT-table").DataTable({
+                        ajax: function (data, callback, settings) {
+                            let customAddress = $("#txtCustomAddress").val().trim();
+                            let address = customAddress ? customAddress : posi.userAddress
+                            $(".current-address-span").text(address);
+
+                            posi.getAddressInfo(address).then(addressInfo => {
+                                posi.getNftList(addressInfo).then(nftList => {
+                                    $("#txtPosiBalance").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.balance), true) + " POSI" )
+
+                                    //busd posi farming
+                                    $("#txtBusdFarmingPendingReward").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.busdFarming.pendingReward), true) + " POSI" )
+                                    $("#txtBusdFarmingStakedLPs").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.busdFarming.userInfo.amount), true))
+                                    let busdFarmingRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.busdFarming.userInfo.nextHarvestUntil))
+                                    $("#txtBusdFarmingRemainingTime").text(busdFarmingRemainingSeconds ? Utils.secondsToReadableTime(busdFarmingRemainingSeconds) : "NOW")
+
+                                    //nft pool
+                                    $("#txtNftPoolPendingReward").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.nft.pendingReward), true) + " POSI" )
+                                    $("#txtNftPoolStakedPower").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.nft.totalMiningPowerStaked), true))
+                                    let nftPoolRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.nft.nextHarvestUntil))
+                                    $("#txtNftPoolRemainingTime").text(nftPoolRemainingSeconds ? Utils.secondsToReadableTime(nftPoolRemainingSeconds) : "NOW")
+                                    
+                                    //nft card list
+                                    let i = nftList.length
+                                    $("#txtNftTotalAmount").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.nft.totalValue), true) + " POSI")
+                                    $("#txtNftTotalPaidAmount").text( Posi.roundCurrency(PosiNFT.getTotalPaidAmount(nftList), true) + " POSI")
+                                    // $("#txtNftTotalMiningPower").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.nft.totalMiningPowerStaked), true) + " POSI")
+                                    $("#txtTotalUnlockedAmount").text( Posi.roundCurrency(PosiNFT.getTotalUnlockedAmount(nftList), true) + " POSI")
+                                    window.addressInfo = addressInfo
+                                    callback({data: nftList})
+                                    updatePriceInfo()
+                                })
+                            })
+                        },
+
+                        "columnDefs": [
+                            {
+                                "targets": "tokenIdCol",
+                                "data": "tokenId"
+                            }, {
+                                "targets": "gradeTitleCol",
+                                "data": "gradeTitle"
+                            },
+                            {
+                                "targets": "gradeCol",
+                                "data": "grade"
+                            },
+                            {
+                                "targets": "sourceCol",
+                                "data": d => d.isBuyFromMarket ? "Purchase" : "Cast"
+                            },
+                            {
+                                "targets": "buyValueCol",
+                                "data": d => d.buyPrice ? Posi.roundCurrency(d.buyPrice) : null
+                            },
+                            {
+                                "targets": "parValueCol",
+                                "data": d => Posi.roundCurrency(d.amount)
+                            },
+                            {
+                                "targets": "miningPowerCol",
+                                "data": d => Posi.roundCurrency(d.miningPower)
+                            },
+                            {
+                                "targets": "efficiencyCol",
+                                "data": "efficiency",
+                                "render": v => Utils.toPercentage(v)
+                            },
+                            {
+                                "targets": "unlockDateCol",
+                                "data": "unlockDate",
+                                "render" : v => {
+                                    if(v) {
+                                        return moment(v).format("YYYY-MM-DD HH:mm:ss")
+                                    }
+                                }
+                            },
+                            {
+                                "targets": "isStakedCol",
+                                "data": "isStaked",
+                                "render" : v => v ? "Staked" : "Holding"
+                            },
+                            {
+                                "targets": "isUnlockedCol",
+                                "data": "isUnlocked",
+                                "render" : v => v ? "Decomposable" : "Locked"
+                            },
+                            {
+                                "targets": "actionsCol",
+                                "data": null,
+                                "render" : (v, t, d) => {
+                                    let html = ''
+                                    if(v.isStaked) {
+                                        html += `<button type='button' class='btn btn-secondary' onclick='unstakeNFT(${d.tokenId})'>Unstake</button>`
+                                    } else {
+                                        html += `<button type='button' class='btn btn-primary' onclick='stakeNFT(${d.tokenId})'>Stake</button>`
+                                        if(v.isUnlocked) {
+                                            html += `<button type='button' class='btn btn-warning' onclick='decomposeNFT(${d.tokenId})'>Decompose</button>`
+                                        }
+                                        html += `<button type='button' class='btn btn-danger' onclick='transferNFT(${d.tokenId})'>Transfer</button>`
+                                    }
+                                    return html
+                                }
+                            }
+                        ],
+                        "order": [[ 0, "desc" ]],
+                        "pageLength": 25
+        
+                    })
+                }
+            })()
+        });
+		</script>
+</body>
+
+</html>
