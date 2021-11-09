@@ -1,9 +1,9 @@
-import {Posi, PosiNFT} from './js/posi.js'
-import Utils from './js/utils.js'
-import AppUtils from './js/app-utils.js'
+import {Posi, PosiNFT} from './posi.js'
+import Utils from './utils.js'
+import AppUtils from './app-utils.js'
 
 
-export default class App () {
+export default class App {
     constructor() {
         this.posi = new Posi();
         this.priceInfo = {};
@@ -13,12 +13,12 @@ export default class App () {
     }
 
     async start() {
-        if(await posi.ethEnabled()) {
-            $("#txtUserAddress").text(`${Utils.maskAddress(posi.userAddress)}`)
+        if(await this.posi.ethEnabled()) {
+            $("#txtUserAddress").text(`${Utils.maskAddress(this.posi.userAddress)}`)
             this.nftDataTable = $("#posiNFT-table").DataTable({
-                ajax: function (data, callback, settings) {
+                ajax: (data, callback, settings) => {
                     let customAddress = $("#txtCustomAddress").val().trim();
-                    let address = customAddress ? customAddress : posi.userAddress
+                    let address = customAddress ? customAddress : this.posi.userAddress
                     $(".current-address-span").text(address);
 
                     this.posi.getAddressInfo(address).then(addressInfo => {
@@ -44,7 +44,7 @@ export default class App () {
                             $("#txtTotalUnlockedAmount").text( Posi.roundCurrency(PosiNFT.getTotalUnlockedAmount(nftList), true) + " POSI")
                             this.addressInfo = addressInfo
                             callback({data: nftList})
-                            updatePriceInfo()
+                            this.updatePriceInfo()
                         })
                     })
                 },
@@ -107,13 +107,13 @@ export default class App () {
                         "render" : (v, t, d) => {
                             let html = ''
                             if(v.isStaked) {
-                                html += `<button type='button' class='btn btn-secondary' onclick='unstakeNFT(${d.tokenId})'>Unstake</button>`
+                                html += `<button type='button' class='btn btn-secondary' onclick='app.unstakeNFT(${d.tokenId})'>Unstake</button>`
                             } else {
-                                html += `<button type='button' class='btn btn-primary' onclick='stakeNFT(${d.tokenId})'>Stake</button>`
+                                html += `<button type='button' class='btn btn-primary' onclick='app.stakeNFT(${d.tokenId})'>Stake</button>`
                                 if(v.isUnlocked) {
-                                    html += `<button type='button' class='btn btn-warning' onclick='decomposeNFT(${d.tokenId})'>Decompose</button>`
+                                    html += `<button type='button' class='btn btn-warning' onclick='app.decomposeNFT(${d.tokenId})'>Decompose</button>`
                                 }
-                                html += `<button type='button' class='btn btn-danger' onclick='transferNFT(${d.tokenId})'>Transfer</button>`
+                                html += `<button type='button' class='btn btn-danger' onclick='app.transferNFT(${d.tokenId})'>Transfer</button>`
                             }
                             return html
                         }
@@ -182,28 +182,28 @@ export default class App () {
     }
 
     async stakeNFT(tokenId) {
-        let result = await AppUtlis.showConfirm(`Stake #${tokenId} ?`)
+        let result = await AppUtils.showConfirm(`Stake #${tokenId} ?`)
         if(result.isConfirmed) {
             try {
                 await this.posi.stakeNFT(tokenId)
-                AppUtlis.showSuccessToast(`#${tokenId} staked`)
+                AppUtils.showSuccessToast(`#${tokenId} staked`)
             } catch(ex) {
-                AppUtlis.showErrorToast(ex.message)
+                AppUtils.showErrorToast(ex.message)
             }
             this.nftDataTable.ajax.reload( null, false )
         }
     }
     
     async decomposeNFT(tokenId) {
-        let result = await AppUtlis.showConfirm(`Decompose #${tokenId} ?`)
+        let result = await AppUtils.showConfirm(`Decompose #${tokenId} ?`)
         if(result.isConfirmed) {
-            let result2 = await AppUtlis.showConfirm(`Are you sure want to decompose #${tokenId} ?`)
+            let result2 = await AppUtils.showConfirm(`Are you sure want to decompose #${tokenId} ?`)
             if(result2.isConfirmed) {
                 try {
                     await this.posi.decomposeNFT(tokenId)
-                    AppUtlis.showSuccessToast(`#${tokenId} decomposed`)
+                    AppUtils.showSuccessToast(`#${tokenId} decomposed`)
                 } catch(ex) {
-                    AppUtlis.showErrorToast(ex.message)
+                    AppUtils.showErrorToast(ex.message)
                 }
                 this.nftDataTable.ajax.reload( null, false )
             }
@@ -215,13 +215,13 @@ export default class App () {
         if(remainSecond) {
             showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
         } else {
-            let result = await AppUtlis.showConfirm(`Harvest BUSD Farm?`)
+            let result = await AppUtils.showConfirm(`Harvest BUSD Farm?`)
             if(result.isConfirmed) {
                 try {
-                    await this.posi.harvestBusdFarm(addressInfo.referrer)
-                    AppUtlis.showSuccessToast(`BUSD Farm harvested`)
+                    await this.posi.harvestBusdFarm(this.addressInfo.referrer)
+                    AppUtils.showSuccessToast(`BUSD Farm harvested`)
                 } catch (ex) {
-                    AppUtlis.showErrorToast(ex.message)
+                    AppUtils.showErrorToast(ex.message)
                 }
                 this.nftDataTable.ajax.reload( null, false )
             }
@@ -231,15 +231,15 @@ export default class App () {
     async harvestNftPool() {
         let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(this.addressInfo.nft.nextHarvestUntil))
         if(remainSecond) {
-            AppUtlis.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
+            AppUtils.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
         } else {
-            let result = await AppUtlis.showConfirm(`Harvest NFT Pool?`)
+            let result = await AppUtils.showConfirm(`Harvest NFT Pool?`)
             if(result.isConfirmed) {
                 try {
                     await this.posi.harvestNftPool()
-                    AppUtlis.showSuccessToast(`NFT Pool harvested`)
+                    AppUtils.showSuccessToast(`NFT Pool harvested`)
                 } catch (ex) {
-                    AppUtlis.showErrorToast(ex.message)
+                    AppUtils.showErrorToast(ex.message)
                 }
                 this.nftDataTable.ajax.reload( null, false )
             }
@@ -248,12 +248,12 @@ export default class App () {
     
     async transferNFT(tokenId) {
         let to = prompt(`Transfer #${tokenId} to address:`)
-        if(to && (await AppUtlis.showConfirm(`Confirm transfer #${tokenId} to ${to} ?`)).isConfirmed) {
+        if(to && (await AppUtils.showConfirm(`Confirm transfer #${tokenId} to ${to} ?`)).isConfirmed) {
             try{
                 await this.posi.safeTransferNFT(posi.userAddress, to, tokenId)
-                AppUtlis.showSuccessToast(`Transferred #${tokenId} to ${to}`)
+                AppUtils.showSuccessToast(`Transferred #${tokenId} to ${to}`)
             } catch(ex) {
-                AppUtlis.showErrorToast(ex.message)
+                AppUtils.showErrorToast(ex.message)
             }
     
             this.nftDataTable.ajax.reload( null, false )
@@ -273,7 +273,7 @@ export default class App () {
         if((await AppUtils.showConfirm(`Cast NFT with ${amount} POSI ?`)).isConfirmed) {
             try {
                 await this.posi.castNFT(amount)
-                let addressInfo = await this.posi.getAddressInfo(posi.userAddress)
+                let addressInfo = await this.posi.getAddressInfo(this.posi.userAddress)
                 let nftList = await this.posi.getNftList(addressInfo)                          
                 let maxTokenId = Math.max(...nftList.map(x=>x.tokenId))
                 let castedNFT = nftList.find(x=>x.tokenId = maxTokenId)

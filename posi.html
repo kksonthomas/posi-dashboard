@@ -31,7 +31,7 @@
 
         .card {
             background-color: #1A202C;
-            color: #a0a0a004;
+            color: #a0a0a0;
             border-color: #2e3650;
         }
 
@@ -135,7 +135,7 @@
                         <div class="input-group">
                             <input id="txtCustomAddress" type="text" class="form-control border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
                             <div class="input-group-append">
-                                <button class="btn btn-primary" type="button" onclick="searchAddress()">
+                                <button class="btn btn-primary" type="button" onclick="app.searchAddress()">
                                     <i class="fas fa-search fa-sm"></i>
                                 </button>
                             </div>
@@ -237,7 +237,7 @@
                                                 <div class="btn-group col-12" role="group">
                                                     <button type="button"  class='btn btn-secondary disabled' disabled onclick=''>Meow</button>
                                                     <button type="button"  class='btn btn-warning disabled' disabled onclick=''>Unmeow</button>
-                                                    <button type="button"  class='btn btn-success' onclick='harvestBusdFarm()'>Harvest</button>
+                                                    <button type="button"  class='btn btn-success' onclick='app.harvestBusdFarm()'>Harvest</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -272,7 +272,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="btn-group col-12" role="group">
-                                                    <button type="button"  class='btn btn-success' onclick='harvestNftPool()'>Harvest</button>
+                                                    <button type="button"  class='btn btn-success' onclick='app.harvestNftPool()'>Harvest</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -294,7 +294,7 @@
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <button type="button"  class='btn btn-success' onclick='castNFT(inputCastNftAmount.value)'>Cast NFT</button>
+                                            <button type="button"  class='btn btn-success' onclick='app.castNFT(inputCastNftAmount.value)'>Cast NFT</button>
                                         </div>
                                     </div>
                                 </div>
@@ -366,7 +366,7 @@
                         <div class="card-header py-3">
                             <h3 class="m-0 font-weight-bold text-primary col-6 float-left">NFT Tables</h3>
                             <div class="col-6 float-right">
-                                <button type="button" class="btn btn-outline-secondary float-right" onclick='nftDataTable.ajax.reload(null, false)'>Refresh</button>
+                                <button type="button" class="btn btn-outline-secondary float-right" onclick='app.nftDataTable.ajax.reload(null, false)'>Refresh</button>
                             </div>
                             
                         </div>
@@ -460,336 +460,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1-rc.0/web3.min.js" integrity="sha512-+4Gl8sbHe5qD5EQiPtIva4be9TwUmmzgYJUdGbhsLYNegQw4Quda/4QdZpJzx8cHq2s1F4PoIpAnERQ0hHTcNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-        })
-
-        window.showSuccessToast = text => {
-            Toast.fire({
-                icon: 'success',
-                title: text
-            })
-        }
-
-        window.showErrorToast = text => {
-            Toast.fire({
-                icon: 'error',
-                title: text
-            })
-        }
-
-        window.showConfirm = (title, text = '') => {
-            return Swal.fire({
-                title: title,
-                text: text,
-                icon: 'warning',
-                showCancelButton: true
-            })
-        }
-
-        window.showError = (title, text = '') => {
-            return Swal.fire({
-                title: title,
-                text: text,
-                icon: 'error'
-            })
-        }
-
-
-    </script>
     <script type="module">
-        import {Posi, PosiNFT} from './js/posi.js'
         import Utils from './js/utils.js'
+        import AppUtils from './js/app-utils.js'
+        import App from './js/app.js'
+
+        window.AppUtils = AppUtils;
+        window.Utils = Utils;
         
-        window.showCastedNFTResult = (posiNFT) => {
-            return Swal.fire({
-                title: `#${posiNFT.tokenId} Grade ${posiNFT.grade} ${posiNFT.gradeTitle}`,
-                html: `
-                    <div><img src='https://app.position.exchange/img/${posiNFT.gradeTitle.toLowerCase()}.png' class='col-6' /><div>
-                    <div>Par: ${Posi.roundCurrency(posiNFT.amount, true)} POSI</div>
-                    <div>Mining Power: ${Posi.roundCurrency(posiNFT.miningPower, true)} POSI</div>
-                    <div>Efficiency: ${Utils.toPercentage(posiNFT.efficiency)}%</div>
-                    <div>Locked days: ${posiNFT.lockedDays} days</div>
-                `
-            })
-        }
-
-        
-        window.posi = new Posi();
-
-        window.updatePriceInfo = async () => {
-            $(".price-reflector").each(function () {
-                let priceSrc = $($(this).data("priceSrc"))
-                let priceSrcUnit = $(this).data("priceSrcUnit")
-                let priceUnit = $(this).data("priceUnit")
-
-                if(!priceUnit) {
-                    priceUnit = "BUSD"
-                }
-
-                let price = '-';
-                
-                try{
-                    let srcPrice = priceSrc.val() ? priceSrc.val() : priceSrc.text().replace(',', '')
-                    price = srcPrice * priceInfo[priceSrcUnit] / priceInfo[priceUnit]
-                } catch(ex) {}
-
-                $(this).text(Utils.isNumber(price) ? Utils.round(price) : '-');
-            })
-        }
-        window.priceInfo = {};
-        (async () => {
-            while(true) {
-                window.priceInfo = await posi.getPriceInfo()
-                window.updatePriceInfo()
-                await Utils.wait(60000)
-            }
-        })()
-
-        window.unstakeNFT = async function(tokenId) {
-            let result = await showConfirm(`Unstake #${tokenId} ?`)
-            if(result.isConfirmed) {
-                try {
-                    await posi.unstakeNFT(tokenId)
-                    showSuccessToast(`#${tokenId} Unstaked`)
-                } catch(ex) {
-                    showErrorToast(ex.message)
-                }
-                nftDataTable.ajax.reload( null, false )
-            }
-        }
-
-        window.stakeNFT = async function(tokenId) {
-            let result = await showConfirm(`Stake #${tokenId} ?`)
-            if(result.isConfirmed) {
-                try {
-                    await posi.stakeNFT(tokenId)
-                    showSuccessToast(`#${tokenId} staked`)
-                } catch(ex) {
-                    showErrorToast(ex.message)
-                }
-                nftDataTable.ajax.reload( null, false )
-            }
-        }
-
-        window.decomposeNFT = async function(tokenId) {
-            let result = await showConfirm(`Decompose #${tokenId} ?`)
-            if(result.isConfirmed) {
-                let result2 = await showConfirm(`Are you sure want to decompose #${tokenId} ?`)
-                if(result2.isConfirmed) {
-                    try {
-                        await posi.decomposeNFT(tokenId)
-                        showSuccessToast(`#${tokenId} decomposed`)
-                    } catch(ex) {
-                        showErrorToast(ex.message)
-                    }
-                    nftDataTable.ajax.reload( null, false )
-                }
-            }
-        }
-
-        window.harvestBusdFarm = async function () {
-            let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.busdFarming.userInfo.nextHarvestUntil))
-            if(remainSecond) {
-                showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
-            } else {
-                let result = await showConfirm(`Harvest BUSD Farm?`)
-                if(result.isConfirmed) {
-                    try {
-                        await posi.harvestBusdFarm(addressInfo.referrer)
-                        showSuccessToast(`BUSD Farm harvested`)
-                    } catch (ex) {
-                        showErrorToast(ex.message)
-                    }
-                    nftDataTable.ajax.reload( null, false )
-                }
-            }
-        }
-
-        window.harvestNftPool = async function () {
-            let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.nft.nextHarvestUntil))
-            if(remainSecond) {
-                showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
-            } else {
-                let result = await showConfirm(`Harvest NFT Pool?`)
-                if(result.isConfirmed) {
-                    try {
-                        await posi.harvestNftPool()
-                        showSuccessToast(`NFT Pool harvested`)
-                    } catch (ex) {
-                        showErrorToast(ex.message)
-                    }
-                    nftDataTable.ajax.reload( null, false )
-                }
-            }
-        }
-
-        window.transferNFT = async function (tokenId) {
-            let to = prompt(`Transfer #${tokenId} to address:`)
-            if(to && (await showConfirm(`Confirm transfer #${tokenId} to ${to} ?`)).isConfirmed) {
-                try{
-                    await posi.safeTransferNFT(posi.userAddress, to, tokenId)
-                    showSuccessToast(`Transferred #${tokenId} to ${to}`)
-                } catch(ex) {
-                    showErrorToast(ex.message)
-                }
-
-                nftDataTable.ajax.reload( null, false )
-            }
-        }
-
-
-        window.searchAddress = function () {
-            nftDataTable.ajax.reload()
-        }
-
-        window.castNFT = async function(amount) {
-            if(amount <= 0) {
-                showError("Cast NFT amount must greater than zero!!!")
-                return
-            }
-            if((await showConfirm(`Cast NFT with ${amount} POSI ?`)).isConfirmed) {
-                try {
-                    await posi.castNFT(amount)
-                    let addressInfo = await posi.getAddressInfo(posi.userAddress)
-                    let nftList = await posi.getNftList(addressInfo)                          
-                    let maxTokenId = Math.max(...nftList.map(x=>x.tokenId))
-                    let castedNFT = nftList.find(x=>x.tokenId = maxTokenId)
-                    showCastedNFTResult(castedNFT)
-                } catch (ex) {
-                    showErrorToast(ex.message)
-                }
-                nftDataTable.ajax.reload( null, false )
-            }
-        }
-        
+        window.app = new App()
         $(() => {
-            (async () => {
-                
-                if(await posi.ethEnabled()) {
-                    $("#txtUserAddress").text(`${Utils.maskAddress(posi.userAddress)}`)
-                    window.nftDataTable = $("#posiNFT-table").DataTable({
-                        ajax: function (data, callback, settings) {
-                            let customAddress = $("#txtCustomAddress").val().trim();
-                            let address = customAddress ? customAddress : posi.userAddress
-                            $(".current-address-span").text(address);
-
-                            posi.getAddressInfo(address).then(addressInfo => {
-                                posi.getNftList(addressInfo).then(nftList => {
-                                    $("#txtPosiBalance").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.balance), true) + " POSI" )
-
-                                    //busd posi farming
-                                    $("#txtBusdFarmingPendingReward").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.busdFarming.pendingReward), true) + " POSI" )
-                                    $("#txtBusdFarmingStakedLPs").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.busdFarming.userInfo.amount), true))
-                                    let busdFarmingRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.busdFarming.userInfo.nextHarvestUntil))
-                                    $("#txtBusdFarmingRemainingTime").text(busdFarmingRemainingSeconds ? Utils.secondsToReadableTime(busdFarmingRemainingSeconds) : "NOW")
-
-                                    //nft pool
-                                    $("#txtNftPoolPendingReward").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.nft.pendingReward), true) + " POSI" )
-                                    $("#txtNftPoolStakedPower").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.nft.totalMiningPowerStaked), true))
-                                    let nftPoolRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.nft.nextHarvestUntil))
-                                    $("#txtNftPoolRemainingTime").text(nftPoolRemainingSeconds ? Utils.secondsToReadableTime(nftPoolRemainingSeconds) : "NOW")
-                                    
-                                    //nft card list
-                                    let i = nftList.length
-                                    $("#txtNftTotalAmount").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.nft.totalValue), true) + " POSI")
-                                    $("#txtNftTotalPaidAmount").text( Posi.roundCurrency(PosiNFT.getTotalPaidAmount(nftList), true) + " POSI")
-                                    // $("#txtNftTotalMiningPower").text( Posi.roundCurrency(posi.uintToPrice(addressInfo.nft.totalMiningPowerStaked), true) + " POSI")
-                                    $("#txtTotalUnlockedAmount").text( Posi.roundCurrency(PosiNFT.getTotalUnlockedAmount(nftList), true) + " POSI")
-                                    window.addressInfo = addressInfo
-                                    callback({data: nftList})
-                                    updatePriceInfo()
-                                })
-                            })
-                        },
-
-                        "columnDefs": [
-                            {
-                                "targets": "tokenIdCol",
-                                "data": "tokenId"
-                            }, {
-                                "targets": "gradeTitleCol",
-                                "data": "gradeTitle"
-                            },
-                            {
-                                "targets": "gradeCol",
-                                "data": "grade"
-                            },
-                            {
-                                "targets": "sourceCol",
-                                "data": d => d.isBuyFromMarket ? "Purchase" : "Cast"
-                            },
-                            {
-                                "targets": "buyValueCol",
-                                "data": d => d.buyPrice ? Posi.roundCurrency(d.buyPrice) : null
-                            },
-                            {
-                                "targets": "parValueCol",
-                                "data": d => Posi.roundCurrency(d.amount)
-                            },
-                            {
-                                "targets": "miningPowerCol",
-                                "data": d => Posi.roundCurrency(d.miningPower)
-                            },
-                            {
-                                "targets": "efficiencyCol",
-                                "data": "efficiency",
-                                "render": v => Utils.toPercentage(v)
-                            },
-                            {
-                                "targets": "unlockDateCol",
-                                "data": "unlockDate",
-                                "render" : v => {
-                                    if(v) {
-                                        return moment(v).format("YYYY-MM-DD HH:mm:ss")
-                                    }
-                                }
-                            },
-                            {
-                                "targets": "isStakedCol",
-                                "data": "isStaked",
-                                "render" : v => v ? "Staked" : "Holding"
-                            },
-                            {
-                                "targets": "isUnlockedCol",
-                                "data": "isUnlocked",
-                                "render" : v => v ? "Decomposable" : "Locked"
-                            },
-                            {
-                                "targets": "actionsCol",
-                                "data": null,
-                                "render" : (v, t, d) => {
-                                    let html = ''
-                                    if(v.isStaked) {
-                                        html += `<button type='button' class='btn btn-secondary' onclick='unstakeNFT(${d.tokenId})'>Unstake</button>`
-                                    } else {
-                                        html += `<button type='button' class='btn btn-primary' onclick='stakeNFT(${d.tokenId})'>Stake</button>`
-                                        if(v.isUnlocked) {
-                                            html += `<button type='button' class='btn btn-warning' onclick='decomposeNFT(${d.tokenId})'>Decompose</button>`
-                                        }
-                                        html += `<button type='button' class='btn btn-danger' onclick='transferNFT(${d.tokenId})'>Transfer</button>`
-                                    }
-                                    return html
-                                }
-                            }
-                        ],
-                        "order": [[ 0, "desc" ]],
-                        "pageLength": 25
-        
-                    })
-                }
-            })()
-        });
-		</script>
+            app.start()
+        })
+    </script>
 </body>
 
 </html>

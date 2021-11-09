@@ -27,7 +27,7 @@ export default class AppUtils {
         })
     }
 
-    this.showConfirm(title, text = '') {
+    static showConfirm(title, text = '') {
         return Swal.fire({
             title: title,
             text: text,
@@ -36,7 +36,7 @@ export default class AppUtils {
         })
     }
 
-    this.showError (title, text = '') {
+    static showError (title, text = '') {
         return Swal.fire({
             title: title,
             text: text,

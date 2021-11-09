@@ -321,8 +321,6 @@ export class Posi {
             }
         })
 
-        console.log(data.busdFarming)
-
         data.nft.stakedTokenList = data.nft.stakedTokenList.filter(x => x > 0)
 
         return data
