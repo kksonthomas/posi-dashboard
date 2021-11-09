@@ -273,9 +273,9 @@
                         <div class="card-header py-3">
                             <h3 class="m-0 font-weight-bold text-primary col-6 float-left">NFT Tables</h3>
                             <div class="col-6 float-right">
-                                <button type="button" class="btn btn-outline-secondary float-right" onclick='app.nftDataTable.ajax.reload(null, false)'>Refresh</button>
+                                <button type="button" class="btn btn-outline-success float-right" onclick='app.nftDataTable.ajax.reload(null, false)'>Refresh</button>
+                                <button type="button" class="btn btn-outline-warning float-right mr-1" onclick='app.nftTableClearFilters()'>Clear filters</button>
                             </div>
-                            
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -291,7 +291,7 @@
                                             <th class="miningPowerCol">Mining Power (POSI)</th>
                                             <th class="efficiencyCol">Efficiency(%)</th>
                                             <th class="unlockDateCol">Unlock Date</th>
-                                            <th class="isStakedCol">Staked</th>
+                                            <th class="isStakedCol">Staked </th>
                                             <th class="isUnlockedCol">Unlocked</th>
                                             <th class="actionsCol">Actions</th>
                                         </tr>

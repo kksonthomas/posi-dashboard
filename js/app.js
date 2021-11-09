@@ -9,13 +9,69 @@ export default class App {
         this.priceInfo = {};
         this.nftDataTable;
         this.addressInfo;
-
     }
 
     async start() {
         if(await this.posi.ethEnabled()) {
             $("#txtUserAddress").text(`${Utils.maskAddress(this.posi.userAddress)}`)
+
+            $('#posiNFT-table thead tr').clone(true).addClass('filters').appendTo('#posiNFT-table thead');
+
             this.nftDataTable = $("#posiNFT-table").DataTable({
+                orderCellsTop: true,
+                
+                initComplete: function () {
+                    let api = this.api();
+         
+                    // For each column
+                    api.columns().eq(0).each(function (colIdx) {
+                        // Set the header cell to contain the input element
+                        let cell = $('.filters th').eq(
+                            $(api.column(colIdx).header()).index()
+                        );
+                        let title = $(cell).text();
+                        if($(cell).hasClass("isStakedCol")) {
+                            let select = $('<select>').addClass("form-control").css("width", "106px")
+                            .append($('<option>').val("").text('-'))
+                            .append($('<option>').val("Staked").text("Staked"))
+                            .append($('<option>').val("Holding").text("Holding"))
+                            $(cell).html("").append(select);
+                        } else if($(cell).hasClass("isUnlockedCol")) {
+                            let select = $('<select>').addClass("form-control").css("width", "106px")
+                            .append($('<option>').val("").text('-'))
+                            .append($('<option>').val("Locked").text("Locked"))
+                            .append($('<option>').val("Unlocked").text("Unlocked"))
+                            $(cell).html("").append(select);
+                        } else if($(cell).hasClass("actionsCol")) {
+                            $(cell).html("");
+                        } else {
+                            $(cell).html('<input type="text" class="form-control" placeholder="' + title + '" />');
+                        }                            
+        
+                        // On every keypress in this input
+                        $('input, select', $('.filters th').eq($(api.column(colIdx).header()).index()))
+                            .off('keyup change')
+                            .on('keyup change', function (e) {
+                                e.stopPropagation();
+        
+                                // Get the search value
+                                $(this).attr('title', $(this).val());
+                                let regexr = '({search})'; //$(this).parents('th').find('select').val();
+        
+                                let cursorPosition = this.selectionStart;
+                                // Search the column for that value
+                                api.column(colIdx).search(
+                                    this.value != ''
+                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                        : '',
+                                    this.value != '',
+                                    this.value == ''
+                                ).draw();
+        
+                                $(this).focus()[0]?.setSelectionRange?.(cursorPosition, cursorPosition);
+                            });
+                    });
+                },
                 ajax: (data, callback, settings) => {
                     let customAddress = $("#txtCustomAddress").val().trim();
                     let address = customAddress ? customAddress : this.posi.userAddress
@@ -45,6 +101,11 @@ export default class App {
                             this.addressInfo = addressInfo
                             callback({data: nftList})
                             this.updatePriceInfo()
+
+                            let notStakedNftCount = nftList.filter(nft => !nft.isStaked).length > 0
+                            if(notStakedNftCount) {
+                                this.showNotStakedWarning(notStakedNftCount)
+                            }
                         })
                     })
                 },
@@ -99,7 +160,7 @@ export default class App {
                     {
                         "targets": "isUnlockedCol",
                         "data": "isUnlocked",
-                        "render" : v => v ? "Decomposable" : "Locked"
+                        "render" : v => v ? "Unlocked" : "Locked"
                     },
                     {
                         "targets": "actionsCol",
@@ -121,7 +182,6 @@ export default class App {
                 ],
                 "order": [[ 0, "desc" ]],
                 "pageLength": 25
-
             })
         }
     }
@@ -137,6 +197,27 @@ export default class App {
                 <div>Locked days: ${posiNFT.lockedDays} days</div>
             `
         })
+    }
+
+    showNotStakedWarning(notStakedCount) {
+        this.Toast = Swal.fire({
+            toast: true,
+            position: 'bottom',
+            icon: 'warning',
+            confirmButtonText: "Go to",
+            showCancelButton: true,
+            cancelButtonText: "Dismiss",
+            title: `${notStakedCount} NFT(s) not staked`,
+        }).then(result => {
+            if (result.isConfirmed) {
+                $("input, select", "#posiNFT-table .filters").val("")
+                $(".isStakedCol select", "#posiNFT-table .filters").val("Holding").change()
+            }
+        })
+    }
+
+    nftTableClearFilters() {
+        $("input, select", "#posiNFT-table .filters").val("").change()
     }
 
     updatePriceInfo() {
