@@ -1,0 +1,77 @@
+#wrapper #content-wrapper {
+    background-color: #171923;
+    color: #a0a0a0
+}
+
+.card {
+    background-color: #1A202C;
+    color: #a0a0a0;
+    border-color: #2e3650;
+}
+
+.navbar {
+    background-color: #1A202C!important;
+    color: #a0a0a0;
+}
+
+.card-header {
+    background-color: #1A202C;
+    border-bottom: 1px solid #718096;
+}
+
+.table {
+    color: #a0a0a0;
+}
+
+.table-bordered td, .table-bordered th {
+    border: 1px solid #718096;
+}
+
+footer.sticky-footer {
+    background-color: #2D3748;
+    color: #a0a0a0;
+}
+
+.table thead th {
+    border-bottom: 2px solid #718096;
+}
+
+.table-bordered {
+    border: 1px solid #718096;
+}
+
+.form-control , .page-link{
+    background-color: #2D3748;
+    color: #a0a0a0;
+    border: 1px solid #718096;
+}
+.form-control:focus, .page-link:hover {
+    background-color: #2D3748;
+    color: #a0a0a0;
+    border: 1px solid #93a7c5;
+}
+
+.page-link:hover {
+    background-color: #2D3748;
+    color: #a0a0a0;
+    border: 1px solid #93a7c5;
+}
+
+.page-item.disabled .page-link {
+    background-color: #2D3748;
+    color: #5e5e5e;
+    border: #2D3748;
+}
+
+.swal2-popup, .swal2-html-container, .swal2-title {
+    background-color: #2D3748!important;
+    color: #dbdbdb!important;
+}
+
+body {
+    background-color: #2D3748;
+}
+
+.container-fluid {
+    margin-top: 100px;
+}
