@@ -248,7 +248,7 @@ export default class App {
                 price = srcPrice * self.priceInfo[priceSrcUnit] / self.priceInfo[priceUnit]
             } catch(ex) {}
     
-            $(this).text(Utils.isNumber(price) ? Utils.round(price) : '-');
+            $(this).text(Utils.isNumber(price) ? Utils.roundToReadable(price, 2) : '-');
         })
         $(".price-display").each(function () {
             let priceSrcUnit = $(this).data("priceSrcUnit")
@@ -271,7 +271,7 @@ export default class App {
                 price = srcPrice * self.priceInfo[priceSrcUnit] / self.priceInfo[priceUnit]
             } catch(ex) {}
     
-            $(this).text(Utils.isNumber(price) ? Utils.round(price, priceDp) : '-');
+            $(this).text(Utils.isNumber(price) ? Utils.roundToReadable(price, priceDp) : '-');
         })
     }
 

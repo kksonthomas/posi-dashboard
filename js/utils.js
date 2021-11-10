@@ -42,6 +42,13 @@ export default class Utils {
         let d = Math.pow(10, dp)
         return Math.round(v * d)/d;
     }
+    static roundToReadable(v, dp=2) {
+        return (new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            maximumFractionDigits: dp
+        })).format(v).replace('$', '')
+    }
     static toPercentage(v, dp = 2) {
         return Utils.round(v * 100, dp)
     }
