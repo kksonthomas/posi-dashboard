@@ -18,6 +18,10 @@
     background-color: #1A202C;
     border-bottom: 1px solid #718096;
 }
+.card-footer {
+    background-color: #1A202C;
+    border-top: 1px solid #718096;
+}
 
 .table {
     color: #a0a0a0;

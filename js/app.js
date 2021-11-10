@@ -9,6 +9,7 @@ export default class App {
         this.priceInfo = {};
         this.nftDataTable;
         this.addressInfo;
+        this.ignoreNextUnstakedNftWarning = false
     }
 
     async start() {
@@ -79,33 +80,40 @@ export default class App {
 
                     this.posi.getAddressInfo(address).then(addressInfo => {
                         this.posi.getNftList(addressInfo).then(nftList => {
-                            $("#txtPosiBalance").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.balance), true) + " POSI" )
+                            $("#txtPosiBalance").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.balance), true))
 
                             //busd posi farming
-                            $("#txtBusdFarmingPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.busdFarming.pendingReward), true) + " POSI" )
+                            $("#txtBusdFarmingPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.busdFarming.pendingReward), true))
                             $("#txtBusdFarmingStakedLPs").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.busdFarming.userInfo.amount), true))
                             let busdFarmingRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.busdFarming.userInfo.nextHarvestUntil))
                             $("#txtBusdFarmingRemainingTime").text(busdFarmingRemainingSeconds ? Utils.secondsToReadableTime(busdFarmingRemainingSeconds) : "NOW")
 
+                            //bnb posi farming
+                            $("#txtBnbFarmingPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.bnbFarming.pendingReward), true))
+                            $("#txtBnbFarmingStakedLPs").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.bnbFarming.userInfo.amount), true))
+                            let bnbFarmingRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.bnbFarming.userInfo.nextHarvestUntil))
+                            $("#txtBnbFarmingRemainingTime").text(bnbFarmingRemainingSeconds ? Utils.secondsToReadableTime(bnbFarmingRemainingSeconds) : "NOW")
+
                             //nft pool
-                            $("#txtNftPoolPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.pendingReward), true) + " POSI" )
+                            $("#txtNftPoolPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.pendingReward), true))
                             $("#txtNftPoolStakedPower").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.totalMiningPowerStaked), true))
                             let nftPoolRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.nft.nextHarvestUntil))
                             $("#txtNftPoolRemainingTime").text(nftPoolRemainingSeconds ? Utils.secondsToReadableTime(nftPoolRemainingSeconds) : "NOW")
                             
                             //nft card list
                             let i = nftList.length
-                            $("#txtNftTotalAmount").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.totalValue), true) + " POSI")
+                            $("#txtNftTotalAmount").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.totalValue), true))
                             $("#txtNftTotalPaidAmount").text( Posi.roundCurrency(PosiNFT.getTotalPaidAmount(nftList), true) + " POSI")
-                            $("#txtTotalUnlockedAmount").text( Posi.roundCurrency(PosiNFT.getTotalUnlockedAmount(nftList), true) + " POSI")
+                            $("#txtTotalUnlockedAmount").text( Posi.roundCurrency(PosiNFT.getTotalUnlockedAmount(nftList), true))
                             this.addressInfo = addressInfo
                             callback({data: nftList})
                             this.updatePriceInfo()
 
-                            let notStakedNftCount = nftList.filter(nft => !nft.isStaked).length > 0
-                            if(notStakedNftCount) {
+                            let notStakedNftCount = nftList.filter(nft => !nft.isStaked).length
+                            if(notStakedNftCount > 0 && !this.ignoreNextUnstakedNftWarning) {
                                 this.showNotStakedWarning(notStakedNftCount)
                             }
+                            this.ignoreNextUnstakedNftWarning = false
                         })
                     })
                 },
@@ -184,6 +192,8 @@ export default class App {
                 "pageLength": 25
             })
         }
+
+        this.startUpdatePriceLoop()
     }
 
     showCastedNFTResult(posiNFT) {
@@ -221,6 +231,7 @@ export default class App {
     }
 
     updatePriceInfo() {
+        let self = this
         $(".price-reflector").each(function () {
             let priceSrc = $($(this).data("priceSrc"))
             let priceSrcUnit = $(this).data("priceSrcUnit")
@@ -234,14 +245,37 @@ export default class App {
             
             try{
                 let srcPrice = priceSrc.val() ? priceSrc.val() : priceSrc.text().replace(',', '')
-                price = srcPrice * this.priceInfo[priceSrcUnit] / this.priceInfo[priceUnit]
+                price = srcPrice * self.priceInfo[priceSrcUnit] / self.priceInfo[priceUnit]
             } catch(ex) {}
     
             $(this).text(Utils.isNumber(price) ? Utils.round(price) : '-');
         })
+        $(".price-display").each(function () {
+            let priceSrcUnit = $(this).data("priceSrcUnit")
+            let priceSrcValue = $(this).data("priceSrcValue")
+            let priceUnit = $(this).data("priceUnit")
+            let priceDp = $(this).data("priceDp")
+    
+            if(!priceUnit) {
+                priceUnit = "BUSD"
+            }
+
+            if(!priceDp) {
+                priceDp = 2
+            }
+    
+            let price = '-';
+            
+            try{
+                let srcPrice = priceSrcValue
+                price = srcPrice * self.priceInfo[priceSrcUnit] / self.priceInfo[priceUnit]
+            } catch(ex) {}
+    
+            $(this).text(Utils.isNumber(price) ? Utils.round(price, priceDp) : '-');
+        })
     }
 
-    async startUpdatePriceLoop(waitMs = 60000) {
+    async startUpdatePriceLoop(waitMs = 10000) {
         while(true) {
             this.priceInfo = await this.posi.getPriceInfo()
             this.updatePriceInfo()
@@ -258,7 +292,7 @@ export default class App {
             } catch(ex) {
                 AppUtils.showErrorToast(ex.message)
             }
-            this.nftDataTable.ajax.reload( null, false )
+            this.reload(false)
         }
     }
 
@@ -271,7 +305,7 @@ export default class App {
             } catch(ex) {
                 AppUtils.showErrorToast(ex.message)
             }
-            this.nftDataTable.ajax.reload( null, false )
+            this.reload(false)
         }
     }
     
@@ -286,7 +320,7 @@ export default class App {
                 } catch(ex) {
                     AppUtils.showErrorToast(ex.message)
                 }
-                this.nftDataTable.ajax.reload( null, false )
+                this.reload(false)
             }
         }
     }
@@ -294,7 +328,7 @@ export default class App {
     async harvestBusdFarm() {
         let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(this.addressInfo.busdFarming.userInfo.nextHarvestUntil))
         if(remainSecond) {
-            showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
+            AppUtils.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
         } else {
             let result = await AppUtils.showConfirm(`Harvest BUSD Farm?`)
             if(result.isConfirmed) {
@@ -304,7 +338,25 @@ export default class App {
                 } catch (ex) {
                     AppUtils.showErrorToast(ex.message)
                 }
-                this.nftDataTable.ajax.reload( null, false )
+                this.reload(false)
+            }
+        }
+    }
+
+    async harvestBnbFarm() {
+        let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(this.addressInfo.bnbFarming.userInfo.nextHarvestUntil))
+        if(remainSecond) {
+            AppUtils.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
+        } else {
+            let result = await AppUtils.showConfirm(`Harvest BNB Farm?`)
+            if(result.isConfirmed) {
+                try {
+                    await this.posi.harvestBnbFarm(this.addressInfo.referrer)
+                    AppUtils.showSuccessToast(`BNB Farm harvested`)
+                } catch (ex) {
+                    AppUtils.showErrorToast(ex.message)
+                }
+                this.reload(false)
             }
         }
     }
@@ -322,7 +374,7 @@ export default class App {
                 } catch (ex) {
                     AppUtils.showErrorToast(ex.message)
                 }
-                this.nftDataTable.ajax.reload( null, false )
+                this.reload(false)
             }
         }
     }
@@ -331,19 +383,28 @@ export default class App {
         let to = prompt(`Transfer #${tokenId} to address:`)
         if(to && (await AppUtils.showConfirm(`Confirm transfer #${tokenId} to ${to} ?`)).isConfirmed) {
             try{
-                await this.posi.safeTransferNFT(posi.userAddress, to, tokenId)
+                await this.posi.safeTransferNFT(this.posi.userAddress, to, tokenId)
                 AppUtils.showSuccessToast(`Transferred #${tokenId} to ${to}`)
             } catch(ex) {
                 AppUtils.showErrorToast(ex.message)
             }
     
-            this.nftDataTable.ajax.reload( null, false )
+            this.reload(false)
         }
     }
     
     
     searchAddress() {
         this.nftDataTable.ajax.reload()
+    }
+
+    reload(reset, ignoreNextUnstakedNftWarning = false) {
+        this.ignoreNextUnstakedNftWarning = ignoreNextUnstakedNftWarning
+        if(reset) {
+            this.nftDataTable.ajax.reload()
+        } else {
+            this.nftDataTable.ajax.reload( null, false )
+        }
     }
     
     async castNFT(amount) {
@@ -362,7 +423,7 @@ export default class App {
             } catch (ex) {
                 AppUtils.showErrorToast(ex.message)
             }
-            this.nftDataTable.ajax.reload( null, false )
+            this.reload(true, true)
         }
     }
 }

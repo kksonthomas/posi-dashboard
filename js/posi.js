@@ -118,7 +118,7 @@ export class Posi {
                 "stateMutability":"view",
                 "type":"function"
             }], '0xfE2D545d214D51e8028947CFD15c9439D3DE3A33'),
-            posiBusdStakingContract: new this.#web3.eth.Contract([{
+            posiStakingContract: new this.#web3.eth.Contract([{
                 "name":"pendingPosition",
                 "inputs":[
                     {"internalType":"uint256","name":"_pid","type":"uint256"},
@@ -308,8 +308,12 @@ export class Posi {
             balance: this.#contracts.posiTokenContract.methods.balanceOf(address),
             referrer: this.#contracts.posiReferralContract.methods.getReferrer(address),
             busdFarming: {
-                userInfo: this.#contracts.posiBusdStakingContract.methods.userInfo(0, address),
-                pendingReward: this.#contracts.posiBusdStakingContract.methods.pendingPosition(0, address),
+                userInfo: this.#contracts.posiStakingContract.methods.userInfo(0, address),
+                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(0, address),
+            },
+            bnbFarming: {
+                userInfo: this.#contracts.posiStakingContract.methods.userInfo(2, address),
+                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(2, address),
             },
             nft: {
                 totalMiningPowerStaked: this.#contracts.nftStakingContract.methods._weightBalances(address),
@@ -367,7 +371,11 @@ export class Posi {
     }
 
     async harvestBusdFarm(referrer) {
-        return this.signAndSendTransaction(this.#contracts.posiBusdStakingContract.methods.deposit(0, 0, referrer))
+        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(0, 0, referrer))
+    }
+
+    async harvestBnbFarm(referrer) {
+        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(2, 0, referrer))
     }
 
     async harvestNftPool() {

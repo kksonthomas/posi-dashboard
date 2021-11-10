@@ -64,6 +64,11 @@
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
+                        <li class="nav-item no-arrow">
+                            <a href='https://poocoin.app/tokens/0x5ca42204cdaa70d5c773946e69de942b85ca6706' class='nav-link btn btn-primary' target='_blank'>
+                                <img src="https://app.position.exchange/img/position-coin.svg" class="mr-1"> $<span class='price-display' data-price-src-value="1" data-price-src-unit="POSI" data-price-dp="4">-</span>
+                            </a>
+                        </li>
                         <div class="topbar-divider d-none d-sm-block"></div>
 
                         <!-- Nav Item - User Information -->
@@ -102,10 +107,27 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">POSI Balance</div>
-                                            <div class="h3 mb-0 font-weight-bold " id="txtPosiBalance"> - </div>
+                                            <div class="h3 mb-0 font-weight-bold "><span id="txtPosiBalance">-</span> POSI</div>
+                                            <div class="text-xs col-form-label pt-0">
+                                                (~$<span class='price-reflector' data-price-src='#txtPosiBalance'
+                                                        data-price-src-unit="POSI">?</span>)                    
+                                            </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <!-- <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Cast NFT</div> -->
+                                            <div class="h5 mb-0 font-weight-bold ">
+                                                <input type="number" class='form-control' id='inputCastNftAmount' min='0' />
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="button"  class='btn btn-success' onclick='app.castNFT(inputCastNftAmount.value)'>Cast NFT</button>
                                         </div>
                                     </div>
                                 </div>
@@ -120,8 +142,11 @@
                                             <div class="row">
                                                 <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Pending Rewards:</label>
                                                 <div class="col-sm-7 text-right">
-                                                    <div class="font-weight-bold col-form-label pb-0" id="txtBusdFarmingPendingReward">-</div>
-                                                    <div class="text-xs col-form-label pt-0">($?)</div>                       
+                                                    <div class="font-weight-bold col-form-label pb-0"><span id="txtBusdFarmingPendingReward">-</span> POSI</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtBusdFarmingPendingReward'
+                                                                data-price-src-unit="POSI">?</span>)                    
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -157,12 +182,59 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">POSI BNB Farming</div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Pending Rewards:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0"><span id="txtBnbFarmingPendingReward">-</span> POSI</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtBnbFarmingPendingReward'
+                                                            data-price-src-unit="POSI">?</span>)
+                                                    </div>                       
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Staked LPs:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtBnbFarmingStakedLPs">-</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtBnbFarmingStakedLPs'
+                                                            data-price-src-unit="POSI_BNB_LP">?</span>)
+                                                    </div>                    
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Next Harvest Until:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label text-lg" id="txtBnbFarmingRemainingTime">--:--:--</div>            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="btn-group col-12" role="group">
+                                                    <button type="button"  class='btn btn-secondary disabled' disabled onclick=''>Meow</button>
+                                                    <button type="button"  class='btn btn-warning disabled' disabled onclick=''>Unmeow</button>
+                                                    <button type="button"  class='btn btn-success' onclick='app.harvestBnbFarm()'>Harvest</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">NFT POOL</div>
                                             <div class="row">
                                                 <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Pending Rewards:</label>
                                                 <div class="col-sm-7 text-right">
-                                                    <div class="font-weight-bold col-form-label pb-0" id="txtNftPoolPendingReward">-</div>
-                                                    <div class="text-xs col-form-label pt-0">($?)</div>                       
+                                                    <div class="font-weight-bold col-form-label pb-0"><span id="txtNftPoolPendingReward">-</span> POSI</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtNftPoolPendingReward'
+                                                            data-price-src-unit="POSI">?</span>)
+                                                    </div>                       
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -187,26 +259,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card  shadow h-100 py-2">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Cast NFT - Test your luck!</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <!-- <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Cast NFT</div> -->
-                                            <div class="h5 mb-0 font-weight-bold ">
-                                                <input type="number" class='form-control' id='inputCastNftAmount' min='0' />
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <button type="button"  class='btn btn-success' onclick='app.castNFT(inputCastNftAmount.value)'>Cast NFT</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="row">
@@ -219,7 +271,11 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Par value of NFTs</div>
-                                            <div class="h5 mb-0 font-weight-bold " id="txtNftTotalAmount"> - </div>
+                                            <div class="h5 mb-0 font-weight-bold "><span id="txtNftTotalAmount">-</span> POSI</div>
+                                            <div class="text-xs col-form-label pt-0">
+                                                (~$<span class='price-reflector' data-price-src='#txtNftTotalAmount'
+                                                    data-price-src-unit="POSI">?</span>)
+                                            </div> 
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -255,7 +311,11 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                                 Unlocked NFT value</div>
-                                            <div class="h5 mb-0 font-weight-bold " id="txtTotalUnlockedAmount"> - </div>
+                                            <div class="h5 mb-0 font-weight-bold "><span id="txtTotalUnlockedAmount">-</span> POSI</div>
+                                            <div class="text-xs col-form-label pt-0">
+                                                (~$<span class='price-reflector' data-price-src='#txtTotalUnlockedAmount'
+                                                        data-price-src-unit="POSI">?</span>)
+                                            </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-unlock fa-2x text-gray-300"></i>
