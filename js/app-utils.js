@@ -43,4 +43,21 @@ export default class AppUtils {
             icon: 'error'
         })
     }
+
+    static showSuccess (title, text = '') {
+        return Swal.fire({
+            title: title,
+            text: text,
+            icon: 'success'
+        })
+    }
+
+    static showPrompt(title, text = '', options = {}) {
+        return Swal.fire(Object.assign({
+            title: title,
+            text: text,
+            input: 'text',
+            icon: 'question'
+        }, options))
+    }
 }

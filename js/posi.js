@@ -28,6 +28,10 @@ export class Posi {
         this.#initContracts()
     }
 
+    get web3() {
+        return this.#web3
+    }
+
     get userAddress() {
         return this.#userAddress
     }

@@ -15,12 +15,12 @@ export default class App {
     async start() {
         if(await this.posi.ethEnabled()) {
             $("#txtUserAddress").text(`${Utils.maskAddress(this.posi.userAddress)}`)
+            this.updateLocalReferrer()
 
             $('#posiNFT-table thead tr').clone(true).addClass('filters').appendTo('#posiNFT-table thead');
-
             this.nftDataTable = $("#posiNFT-table").DataTable({
                 orderCellsTop: true,
-                
+                searching: false,
                 initComplete: function () {
                     let api = this.api();
          
@@ -79,6 +79,11 @@ export default class App {
                     $(".current-address-span").text(address);
 
                     this.posi.getAddressInfo(address).then(addressInfo => {
+                        //referrer settings
+                        if(address == this.posi.userAddress && !localStorage.getItem('referrer')) {
+                            this.updateLocalReferrer(addressInfo.referrer)
+                        }
+
                         this.posi.getNftList(addressInfo).then(nftList => {
                             $("#txtPosiBalance").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.balance), true))
 
@@ -354,10 +359,10 @@ export default class App {
         if(remainSecond) {
             AppUtils.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
         } else {
-            let result = await AppUtils.showConfirm(`Harvest BUSD Farm?`)
+            let result = await AppUtils.showConfirm(`Harvest BUSD Farm?`, `referrer: ${this.localReferrer}`)
             if(result.isConfirmed) {
                 try {
-                    await this.posi.harvestBusdFarm(this.addressInfo.referrer)
+                    await this.posi.harvestBusdFarm(this.localReferrer)
                     AppUtils.showSuccessToast(`BUSD Farm harvested`)
                 } catch (ex) {
                     AppUtils.showErrorToast(ex.message)
@@ -372,10 +377,10 @@ export default class App {
         if(remainSecond) {
             AppUtils.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
         } else {
-            let result = await AppUtils.showConfirm(`Harvest BNB Farm?`)
+            let result = await AppUtils.showConfirm(`Harvest BNB Farm?`, `referrer: ${this.localReferrer}`)
             if(result.isConfirmed) {
                 try {
-                    await this.posi.harvestBnbFarm(this.addressInfo.referrer)
+                    await this.posi.harvestBnbFarm(this.localReferrer)
                     AppUtils.showSuccessToast(`BNB Farm harvested`)
                 } catch (ex) {
                     AppUtils.showErrorToast(ex.message)
@@ -404,7 +409,13 @@ export default class App {
     }
     
     async transferNFT(tokenId) {
-        let to = prompt(`Transfer #${tokenId} to address:`)
+        let { value:to } = await AppUtils.showPrompt(`Transfer #${tokenId} to address:`, '', {
+            inputValidator: address => {
+                if(!this.posi.web3.utils.isAddress(address)) {
+                    return "Invalid address"
+                }
+            }
+        })
         if(to && (await AppUtils.showConfirm(`Confirm transfer #${tokenId} to ${to} ?`)).isConfirmed) {
             try{
                 await this.posi.safeTransferNFT(this.posi.userAddress, to, tokenId)
@@ -448,6 +459,39 @@ export default class App {
                 AppUtils.showErrorToast(ex.message)
             }
             this.reload(true, true)
+        }
+    }
+
+    get localReferrer() {
+        return localStorage.getItem("referrer")
+    }
+
+    updateLocalReferrer(address = null) {
+        if(address) {
+            if(this.posi.web3.utils.isAddress(address)) {
+                localStorage.setItem("referrer", address)
+            } else {
+                throw "Invalid address: " + address
+            }
+        }
+        $("#txtCurrentReferrer").text(this.localReferrer ? Utils.maskAddress(this.localReferrer) : "?")
+    }
+
+    async showSetReferrerDialog() {
+        let { value:referrer } = await AppUtils.showPrompt("Enter referer address:", '', {
+            inputValidator: address => {
+                if(!this.posi.web3.utils.isAddress(address)) {
+                    return "Invalid address"
+                }
+            }
+        })
+        if(referrer) {
+            if(this.posi.web3.utils.isAddress(referrer)) {
+                this.updateLocalReferrer(referrer)
+                AppUtils.showSuccessToast(`Set referrer to ${referrer}`)
+            } else {
+                AppUtils.showError(`${referrer} is not a valid address`)
+            }
         }
     }
 }
