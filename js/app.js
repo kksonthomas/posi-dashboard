@@ -87,19 +87,43 @@ export default class App {
                             $("#txtBusdFarmingStakedLPs").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.busdFarming.userInfo.amount), true))
                             let busdFarmingRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.busdFarming.userInfo.nextHarvestUntil))
                             $("#txtBusdFarmingRemainingTime").text(busdFarmingRemainingSeconds ? Utils.secondsToReadableTime(busdFarmingRemainingSeconds) : "NOW")
+                            let busdDailyROI = null
+                            let busdLastHarvestPassedSeconds = 0
+                            if(this.priceInfo) {
+                                let busdPendingRewardPercentage = this.posi.uintToPrice(addressInfo.busdFarming.pendingReward) * this.priceInfo["POSI"] / this.posi.uintToPrice(addressInfo.busdFarming.userInfo.amount) / this.priceInfo["POSI_BUSD_LP"]
+                                busdLastHarvestPassedSeconds = Utils.currentTimestamp() - (addressInfo.busdFarming.userInfo.nextHarvestUntil - addressInfo.busdFarming.poolInfo.harvestInterval)
+                                busdDailyROI = busdPendingRewardPercentage / busdLastHarvestPassedSeconds * 86400
+                            }
+                            $("#txtBusdFarmingDailyROI").text(busdDailyROI ? `~${Utils.toPercentage(busdDailyROI)}%` : "-")
+                            $("#txtBusdFarmingSinceLastHarvest").text(busdDailyROI ? `${Utils.secondsToReadableTime(busdLastHarvestPassedSeconds)}` : "-")
 
                             //bnb posi farming
                             $("#txtBnbFarmingPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.bnbFarming.pendingReward), true))
                             $("#txtBnbFarmingStakedLPs").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.bnbFarming.userInfo.amount), true))
                             let bnbFarmingRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.bnbFarming.userInfo.nextHarvestUntil))
                             $("#txtBnbFarmingRemainingTime").text(bnbFarmingRemainingSeconds ? Utils.secondsToReadableTime(bnbFarmingRemainingSeconds) : "NOW")
+                            $("#txtBnbFarmingRemainingTime").text(bnbFarmingRemainingSeconds ? Utils.secondsToReadableTime(bnbFarmingRemainingSeconds) : "NOW")
+                            let bnbDailyROI = null
+                            let bnbLastHarvestPassedSeconds = 0
+                            if(this.priceInfo) {
+                                let bnbPendingRewardPercentage = this.posi.uintToPrice(addressInfo.bnbFarming.pendingReward) * this.priceInfo["POSI"] / this.posi.uintToPrice(addressInfo.bnbFarming.userInfo.amount) / this.priceInfo["POSI_BNB_LP"]
+                                bnbLastHarvestPassedSeconds = Utils.currentTimestamp() - (addressInfo.bnbFarming.userInfo.nextHarvestUntil - addressInfo.bnbFarming.poolInfo.harvestInterval)
+                                bnbDailyROI = bnbPendingRewardPercentage / bnbLastHarvestPassedSeconds * 86400
+                            }
+                            $("#txtBnbFarmingDailyROI").text(bnbDailyROI ? `~${Utils.toPercentage(bnbDailyROI)}%` : "-")
+                            $("#txtBnbFarmingSinceLastHarvest").text(bnbDailyROI ? `${Utils.secondsToReadableTime(bnbLastHarvestPassedSeconds)}` : "-")
 
                             //nft pool
                             $("#txtNftPoolPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.pendingReward), true))
                             $("#txtNftPoolStakedPower").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.totalMiningPowerStaked), true))
                             let nftPoolRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.nft.nextHarvestUntil))
                             $("#txtNftPoolRemainingTime").text(nftPoolRemainingSeconds ? Utils.secondsToReadableTime(nftPoolRemainingSeconds) : "NOW")
-                            
+                            let nftPendingRewardPercentage = this.posi.uintToPrice(addressInfo.nft.pendingReward) / this.posi.uintToPrice(addressInfo.nft.totalMiningPowerStaked)
+                            let nftLastHarvestPassedSeconds = Utils.currentTimestamp() - (addressInfo.nft.nextHarvestUntil - addressInfo.nft.harvestInterval)
+                            let nftDailyROI = nftPendingRewardPercentage / nftLastHarvestPassedSeconds * 86400
+                            $("#txtNftPoolDailyROI").text(`~${Utils.toPercentage(nftDailyROI)}%`)
+                            $("#txtNftPoolSinceLastHarvest").text(nftDailyROI ? `${Utils.secondsToReadableTime(nftLastHarvestPassedSeconds)}` : "-")
+
                             //nft card list
                             let i = nftList.length
                             $("#txtNftTotalAmount").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.totalValue), true))

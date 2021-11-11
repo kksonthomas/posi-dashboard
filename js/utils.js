@@ -14,6 +14,10 @@ export default class Utils {
         }
     }
 
+    static currentTimestamp() {
+        return Math.round(Date.now() / 1000)
+    }
+
     static secondsToReadableTime(v) {
         if(v <= 0) {
             return 

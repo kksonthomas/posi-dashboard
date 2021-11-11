@@ -144,6 +144,20 @@ export class Posi {
                 "type":"function"
             },
             {
+                "name":"poolInfo",
+                "inputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "outputs":[
+                    {"internalType":"contract IERC20","name":"lpToken","type":"address"},
+                    {"internalType":"uint256","name":"allocPoint","type":"uint256"},
+                    {"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},
+                    {"internalType":"uint256","name":"accPositionPerShare","type":"uint256"},
+                    {"internalType":"uint16","name":"depositFeeBP","type":"uint16"},
+                    {"internalType":"uint256","name":"harvestInterval","type":"uint256"}
+                ],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
                 "name":"deposit",
                 "inputs":[
                     {"internalType":"uint256","name":"_pid","type":"uint256"},
@@ -155,6 +169,13 @@ export class Posi {
                 "type":"function"
             }], '0x0c54b0b7d61de871db47c3ad3f69feb0f2c8db0b'),
             nftStakingContract : new this.#web3.eth.Contract([{
+                "name":"_harvestInterval",
+                "inputs":[],
+                "outputs":[{"internalType":"uint256","name":"interval","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
                 "name": "getPlayerIds",
                 "inputs": [{"internalType": "address","name": "account","type": "address"}],
                 "outputs": [{"internalType": "uint256[]","name": "tokenId","type": "uint256[]"}],
@@ -310,12 +331,15 @@ export class Posi {
             busdFarming: {
                 userInfo: this.#contracts.posiStakingContract.methods.userInfo(0, address),
                 pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(0, address),
+                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(0)
             },
             bnbFarming: {
                 userInfo: this.#contracts.posiStakingContract.methods.userInfo(2, address),
                 pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(2, address),
+                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(2)
             },
             nft: {
+                harvestInterval: this.#contracts.nftStakingContract.methods._harvestInterval(),
                 totalMiningPowerStaked: this.#contracts.nftStakingContract.methods._weightBalances(address),
                 totalValue: this.#contracts.nftStakingContract.methods._degoBalances(address),
                 pendingReward: this.#contracts.nftStakingContract.methods.earned(address),
