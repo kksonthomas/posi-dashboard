@@ -20,7 +20,7 @@ export default class App {
             $('#posiNFT-table thead tr').clone(true).addClass('filters').appendTo('#posiNFT-table thead');
             this.nftDataTable = $("#posiNFT-table").DataTable({
                 orderCellsTop: true,
-                searching: false,
+                // searching: false,
                 initComplete: function () {
                     let api = this.api();
          
@@ -40,7 +40,7 @@ export default class App {
                         } else if($(cell).hasClass("isUnlockedCol")) {
                             let select = $('<select>').addClass("form-control").css("width", "106px")
                             .append($('<option>').val("").text('-'))
-                            .append($('<option>').val("Locked").text("Locked"))
+                            .append($('<option>').val("Locking").text("Locking"))
                             .append($('<option>').val("Unlocked").text("Unlocked"))
                             $(cell).html("").append(select);
                         } else if($(cell).hasClass("actionsCol")) {
@@ -197,7 +197,7 @@ export default class App {
                     {
                         "targets": "isUnlockedCol",
                         "data": "isUnlocked",
-                        "render" : v => v ? "Unlocked" : "Locked"
+                        "render" : v => v ? "Unlocked" : "Locking"
                     },
                     {
                         "targets": "actionsCol",
@@ -251,6 +251,7 @@ export default class App {
             if (result.isConfirmed) {
                 $("input, select", "#posiNFT-table .filters").val("")
                 $(".isStakedCol select", "#posiNFT-table .filters").val("Holding").change()
+                this.nftDataTable.page( 'first' ).draw( 'page' );
             }
         })
     }

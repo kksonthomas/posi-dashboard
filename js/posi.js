@@ -24,6 +24,7 @@ export class Posi {
 
     constructor() {
         this.#web3 = new Web3('https://bsc-dataseed.binance.org:443/')
+        // this.#web3 = new Web3('https://bsc-dataseed1.ninicoin.io:443/')
         this.#multicall = new Multicall(this.#web3, '0x1Ee38d535d541c55C9dae27B12edf090C608E6Fb')
         this.#initContracts()
     }
@@ -38,6 +39,10 @@ export class Posi {
 
     get contracts() {
         return this.#contracts
+    }
+
+    get multicall() {
+        return this.#multicall
     }
     
     uintToPrice(v) {
@@ -269,13 +274,21 @@ export class Posi {
                 "type":"function"
             }], "0xeca16df8d11d3a160ff7a835a8dd91e0ae296489"),
             nftFactoryContract : new this.#web3.eth.Contract([{
-                "name": "getGego",
+                "name":"_gegoId",
+                "inputs":[],
+                "outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "name": "_gegoes",
                 "inputs": [{
                     "internalType": "uint256",
                     "name": "tokenId",
                     "type": "uint256"
                 }],
                 "outputs":[
+                    {"internalType":"uint256","name":"id","type":"uint256"},
                     {"internalType":"uint256","name":"grade","type":"uint256"},
                     {"internalType":"uint256","name":"quality","type":"uint256"},
                     {"internalType":"uint256","name":"amount","type":"uint256"},
@@ -359,24 +372,25 @@ export class Posi {
     }
 
     async getNftData (tokenId) {
-        let data = await this.#contracts.nftFactoryContract.methods.getGego(tokenId).call()
+        let data = await this.#contracts.nftFactoryContract.methods._gegoes(tokenId).call()
         return data
     }
 
     async getNftList (addressInfo) {
         let tokenIdList = [...addressInfo.nft.holdingTokenList, ...addressInfo.nft.stakedTokenList]
         
-        let [marketHistory, data] = await Promise.all([
-            ky.get(this.constructor.POSI_API_URL + `marketplace/myMarketHistory?address=${addressInfo.address}&perPage=10000&page=1`).json(),
-            this.#multicall.call(tokenIdList.map(tokenId => { return {
-                    tokenId: tokenId,
-                    isStaked: addressInfo.nft.holdingTokenList.indexOf(tokenId) === -1,
-                    data: this.#contracts.nftFactoryContract.methods.getGego(tokenId)
-                }
-            }))
-        ])
+        let marketHistory = null
+        try {
+            marketHistory = await ky.get(this.constructor.POSI_API_URL + `marketplace/myMarketHistory?address=${addressInfo.address}&perPage=10000&page=1`, {timeout:5000}).json()
+        } catch(ex) {}
+        let data = await this.#multicall.call(tokenIdList.map(tokenId => { return {
+                tokenId: tokenId,
+                isStaked: addressInfo.nft.holdingTokenList.indexOf(tokenId) === -1,
+                data: this.#contracts.nftFactoryContract.methods._gegoes(tokenId)
+            }
+        }))
 
-        return data.map(d => new PosiNFT(this, d.tokenId, d.isStaked, d.data, marketHistory.data.rows.find(v => v.MarketListing.tokenId == d.tokenId && v.type == "purchase")?.MarketListing))
+        return data.map(d => new PosiNFT(this, d.tokenId, d.isStaked, d.data, marketHistory ? marketHistory.data.rows.find(v => v.MarketListing.tokenId == d.tokenId && v.type == "purchase")?.MarketListing : []))
     }
 
     async stakeNFT(gegoId) {
@@ -427,6 +441,8 @@ export class PosiNFT {
         this.tLevel = gegoData.tLevel
         this.tokenId = tokenId
         this.isStaked = isStaked
+        this.isDecomposed = gegoData.id == 0
+        
             
         //compute
         this.amount = posi.uintToPrice(this.amount, 18)
