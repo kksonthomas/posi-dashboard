@@ -91,3 +91,7 @@ body {
 .btn {
     border-radius: 0!important;
 }
+
+input, .card, select, .nav-item, .paginate_button .page-link {
+    border-radius: 0!important;
+}

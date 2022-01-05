@@ -51,17 +51,6 @@
                         <div class="sidebar-brand-text mx-3">Unoffical POSI Dashboard</div>
                     </a>
 
-                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" method="get" action="">
-                        <div class="input-group">
-                            <input id="txtCustomAddress" name='address' type="text" class="form-control border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item no-arrow">
@@ -101,6 +90,16 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+                    <form class="mt-2 mb-2" method="get" action="">
+                        <div class="input-group">
+                            <input id="txtCustomAddress" name='address' type="text" class="form-control border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2">Posi Dashboard - <span class="current-address-span"></span></h1>
