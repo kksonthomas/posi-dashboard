@@ -42,6 +42,15 @@ export default class Utils {
         newDate.setDate(newDate.getDate() + Number(day))
         return newDate
     }
+
+    static datetimeToDate(dateObj) {
+        let month = dateObj.getUTCMonth() + 1; //months from 1-12
+        let day = dateObj.getUTCDate();
+        let year = dateObj.getUTCFullYear();
+
+        return `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
+    }
+
     static round(v, dp = 2) {
         let d = Math.pow(10, dp)
         return Math.round(v * d)/d;

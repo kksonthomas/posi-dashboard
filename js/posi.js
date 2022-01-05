@@ -61,10 +61,16 @@ export class Posi {
         }
     }
 
-    async ethEnabled() {
+    async ethIsConnected() {
+        return (await (window.ethereum.request({ method: 'eth_accounts' }))).length > 0
+    }
+
+    async ethEnabled(askIfNotConnected = true) {
         if (window.ethereum) {
-            await window.ethereum.send('eth_requestAccounts')
             window.web3 = new Web3(window.ethereum)
+            if(askIfNotConnected && !await this.ethIsConnected()) {
+                await window.ethereum.send('eth_requestAccounts')
+            }
             await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: '0x38' }], // chainId must be in hexadecimal numbers

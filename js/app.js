@@ -1,7 +1,7 @@
 import {Posi, PosiNFT} from './posi.js'
 import Utils from './utils.js'
 import AppUtils from './app-utils.js'
-
+ 
 
 export default class App {
     constructor() {
@@ -12,10 +12,52 @@ export default class App {
         this.ignoreNextUnstakedNftWarning = false
     }
 
-    async start() {
-        if(await this.posi.ethEnabled()) {
+    #retrieveAddressFromQueryString() {
+        let addressPair = window.location.search.slice(1).split("&").map(x => x.split("=")).find(x => x[0].toLowerCase() == 'address')
+        if(addressPair) {
+            console.log(addressPair[1])
+            return addressPair[1]
+        } else {
+            return null
+        }
+    }
+
+    async connectMetamask(askIfNotConnected) {
+        if(await this.posi.ethEnabled(askIfNotConnected) && await this.posi.ethIsConnected()) {
             $("#txtUserAddress").text(`${Utils.maskAddress(this.posi.userAddress)}`)
             this.updateLocalReferrer()
+            await this.updateEthConnectRequiredUIs()
+            this.reload(true)
+        }
+    }
+
+    async updateEthConnectRequiredUIs() {
+        if(await this.posi.ethIsConnected()) {
+            $(".display-on-eth-connected").show()
+            $(".display-on-eth-not-connected").hide()
+        } else {
+            $(".display-on-eth-connected").hide()
+            $(".display-on-eth-not-connected").show()
+        }
+
+        if(this.#isOwningCurrentAddress()) {
+            $(".display-on-owning-address").show()
+        } else {
+            $(".display-on-owning-address").hide()
+        }
+    }
+
+    async start() {
+        let app = this
+        await this.connectMetamask(false)
+        await this.updateEthConnectRequiredUIs();
+        let targetAddress = this.#retrieveAddressFromQueryString()
+        if(targetAddress) {
+            $("#txtCustomAddress").val(targetAddress)
+        }
+        // if(await this.posi.ethEnabled()) {
+        //     $("#txtUserAddress").text(`${Utils.maskAddress(this.posi.userAddress)}`)
+        //     this.updateLocalReferrer()
 
             $('#posiNFT-table thead tr').clone(true).addClass('filters').appendTo('#posiNFT-table thead');
             this.nftDataTable = $("#posiNFT-table").DataTable({
@@ -143,6 +185,94 @@ export default class App {
                                 this.showNotStakedWarning(notStakedNftCount)
                             }
                             this.ignoreNextUnstakedNftWarning = false
+
+                            //charts
+                            // window.chartNftDistribution = new Chart(document.getElementById('chartNftDistribution').getContext('2d'), {
+                            //     type: 'bar',
+                            //     data: {
+                            //         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                            //         datasets: [{
+                            //             label: '# of Votes',
+                            //             data: [12, 19, 3, 5, 2, 3],
+                            //             backgroundColor: [
+                            //                 'rgba(255, 99, 132, 0.2)',
+                            //                 'rgba(54, 162, 235, 0.2)',
+                            //                 'rgba(255, 206, 86, 0.2)',
+                            //                 'rgba(75, 192, 192, 0.2)',
+                            //                 'rgba(153, 102, 255, 0.2)',
+                            //                 'rgba(255, 159, 64, 0.2)'
+                            //             ],
+                            //             borderColor: [
+                            //                 'rgba(255, 99, 132, 1)',
+                            //                 'rgba(54, 162, 235, 1)',
+                            //                 'rgba(255, 206, 86, 1)',
+                            //                 'rgba(75, 192, 192, 1)',
+                            //                 'rgba(153, 102, 255, 1)',
+                            //                 'rgba(255, 159, 64, 1)'
+                            //             ],
+                            //             borderWidth: 1
+                            //         }]
+                            //     },
+                            //     options: {
+                            //         scales: {
+                            //             y: {
+                            //                 beginAtZero: true
+                            //             }
+                            //         }
+                            //     }
+                            // });
+                            let timestampNow = Date.now() / 1000
+                            let todayString = Utils.datetimeToDate(new Date())
+                            let maxUnlockTimestamp = Math.max(...nftList.map(n => n.unlockDate)) / 1000
+                            let maxUnlockDate = Utils.dateAddDay(new Date(maxUnlockTimestamp * 1000), 1)
+                            let maxUnlockDateString = Utils.datetimeToDate(maxUnlockDate)
+                            let currentDateString = todayString;
+                            let currentDate = new Date()
+                            let chartNftUnlockedValueLabels = []
+                            let data = []
+                            if(timestampNow < maxUnlockTimestamp) {
+                                while(currentDateString != maxUnlockDateString) {
+                                    currentDateString = Utils.datetimeToDate(currentDate)
+                                    chartNftUnlockedValueLabels.push(currentDateString)
+                                    let sumAmt = 0
+                                    nftList.map(n =>  sumAmt += n.unlockDate < currentDate.getTime() ? n.amount : 0)
+                                    data.push(sumAmt)
+                                    currentDate.setDate(currentDate.getDate()+1)
+                                }
+                            } else {
+                                chartNftUnlockedValueLabels.push(todayString)
+                                let sumAmt = 0
+                                nftList.map(n => sumAmt += n.amount)
+                                data.push(sumAmt)
+                            }
+
+                            if(!window.chartjsNftUnlockedValue) {
+                                window.chartjsNftUnlockedValue = new Chart(document.getElementById('chartNftUnlockedValue').getContext('2d'), {
+                                    type: 'line',
+                                    data: {
+                                        labels: [],
+                                        datasets: [{
+                                            label: 'UnlockedValues',
+                                            data: [],
+                                            borderColor: ['rgba(255, 255, 255, 1)'],
+                                            backgroundColor:  ['rgba(255, 255, 255, 0.5)'],
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                            window.chartjsNftUnlockedValue.data.labels = chartNftUnlockedValueLabels;
+                            window.chartjsNftUnlockedValue.data.datasets.forEach((dataset) => {
+                                dataset.data = data
+                            });
+                            window.chartjsNftUnlockedValue.update()
+                            app.updateEthConnectRequiredUIs()
                         })
                     })
                 },
@@ -204,14 +334,16 @@ export default class App {
                         "data": null,
                         "render" : (v, t, d) => {
                             let html = ''
-                            if(v.isStaked) {
-                                html += `<button type='button' class='btn btn-secondary' onclick='app.unstakeNFT(${d.tokenId})'>Unstake</button>`
-                            } else {
-                                html += `<button type='button' class='btn btn-primary' onclick='app.stakeNFT(${d.tokenId})'>Stake</button>`
-                                if(v.isUnlocked) {
-                                    html += `<button type='button' class='btn btn-warning' onclick='app.decomposeNFT(${d.tokenId})'>Decompose</button>`
+                            if(app.#isOwningCurrentAddress()) {
+                                if(v.isStaked) {
+                                    html += `<button type='button' class='btn btn-secondary' onclick='app.unstakeNFT(${d.tokenId})'>Unstake</button>`
+                                } else {
+                                    html += `<button type='button' class='btn btn-primary' onclick='app.stakeNFT(${d.tokenId})'>Stake</button>`
+                                    if(v.isUnlocked) {
+                                        html += `<button type='button' class='btn btn-warning' onclick='app.decomposeNFT(${d.tokenId})'>Decompose</button>`
+                                    }
+                                    html += `<button type='button' class='btn btn-danger' onclick='app.transferNFT(${d.tokenId})'>Transfer</button>`
                                 }
-                                html += `<button type='button' class='btn btn-danger' onclick='app.transferNFT(${d.tokenId})'>Transfer</button>`
                             }
                             return html
                         }
@@ -220,9 +352,13 @@ export default class App {
                 "order": [[ 0, "desc" ]],
                 "pageLength": 25
             })
-        }
+        // }
 
         this.startUpdatePriceLoop()
+    }
+
+    #isOwningCurrentAddress() {
+        return !!this.addressInfo && !!this.posi.userAddress && this.addressInfo.address.toLowerCase() == this.posi.userAddress.toLowerCase()
     }
 
     showCastedNFTResult(posiNFT) {
@@ -435,6 +571,9 @@ export default class App {
     }
 
     reload(reset, ignoreNextUnstakedNftWarning = false) {
+        if(!this.nftDataTable) {
+            return
+        }
         this.ignoreNextUnstakedNftWarning = ignoreNextUnstakedNftWarning
         if(reset) {
             this.nftDataTable.ajax.reload()

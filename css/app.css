@@ -14,6 +14,10 @@
     color: #a0a0a0;
 }
 
+.display-on-eth-connected, .display-on-owning-address {
+    display: none;
+}
+
 .card-header {
     background-color: #1A202C;
     border-bottom: 1px solid #718096;
@@ -82,4 +86,8 @@ body {
 
 .filters input {
     width: 100%;
+}
+
+.btn {
+    border-radius: 0!important;
 }
