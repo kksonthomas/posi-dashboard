@@ -171,6 +171,21 @@ export default class App {
                             $("#txtNftPoolDailyROI").text(`~${Utils.toPercentage(nftDailyROI)}%`)
                             $("#txtNftPoolSinceLastHarvest").text(nftDailyROI ? `${Utils.secondsToReadableTime(nftLastHarvestPassedSeconds)}` : "-")
 
+                            //pbond pool
+                            $("#txtPbond001PoolPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.pbond001Pool.pendingReward), true))
+                            $("#txtPbond001PoolStakedLPs").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.pbond001Pool.userInfo.amount), true))
+                            let pbond001PoolRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.pbond001Pool.userInfo.nextHarvestUntil))
+                            $("#txtPbond001PoolRemainingTime").text(pbond001PoolRemainingSeconds ? Utils.secondsToReadableTime(pbond001PoolRemainingSeconds) : "NOW")
+                            let pbond001DailyROI = null
+                            let pbond001LastHarvestPassedSeconds = 0
+                            if(this.priceInfo) {
+                                let pbond001PendingRewardPercentage = this.posi.uintToPrice(addressInfo.pbond001Pool.pendingReward) * this.priceInfo["POSI"] / this.posi.uintToPrice(addressInfo.pbond001Pool.userInfo.amount) / this.priceInfo["PBOND_001"]
+                                pbond001LastHarvestPassedSeconds = Utils.currentTimestamp() - (addressInfo.pbond001Pool.userInfo.nextHarvestUntil - addressInfo.pbond001Pool.poolInfo.harvestInterval)
+                                pbond001DailyROI = pbond001PendingRewardPercentage / pbond001LastHarvestPassedSeconds * 86400
+                            }
+                            $("#txtPbond001PoolDailyROI").text(pbond001DailyROI ? `~${Utils.toPercentage(pbond001DailyROI)}%` : "-")
+                            $("#txtPbond001PoolSinceLastHarvest").text(pbond001DailyROI ? `${Utils.secondsToReadableTime(pbond001LastHarvestPassedSeconds)}` : "-")
+
                             //nft card list
                             let i = nftList.length
                             $("#txtNftTotalAmount").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.totalValue), true))
@@ -507,6 +522,24 @@ export default class App {
                 try {
                     await this.posi.harvestBusdFarm(this.localReferrer)
                     AppUtils.showSuccessToast(`BUSD Farm harvested`)
+                } catch (ex) {
+                    AppUtils.showErrorToast(ex.message)
+                }
+                this.reload(false)
+            }
+        }
+    }
+
+    async harvestPbond001Pool() {
+        let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(this.addressInfo.pbond001Pool.userInfo.nextHarvestUntil))
+        if(remainSecond) {
+            AppUtils.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
+        } else {
+            let result = await AppUtils.showConfirm(`Harvest PBond-001 Pool?`, `referrer: ${this.localReferrer}`)
+            if(result.isConfirmed) {
+                try {
+                    await this.posi.harvestPbond001Pool(this.localReferrer)
+                    AppUtils.showSuccessToast(`PBond-001 Pool harvested`)
                 } catch (ex) {
                     AppUtils.showErrorToast(ex.message)
                 }

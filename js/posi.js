@@ -343,6 +343,7 @@ export class Posi {
 
     async getPriceInfo() {        
         let data = await ky.get(this.constructor.POSI_API_URL + `price/prices`).json()
+        data.prices["PBOND_001"] = 10;
         return data.prices;
     }
 
@@ -369,6 +370,11 @@ export class Posi {
                 nextHarvestUntil: this.#contracts.nftStakingContract.methods._nextHarvestUntil(address),
                 stakedTokenList: this.#contracts.nftStakingContract.methods.getPlayerIds(address),
                 holdingTokenList: this.#contracts.nftTokenContract.methods.tokensOfOwner(address)
+            },
+            pbond001Pool: {
+                userInfo: this.#contracts.posiStakingContract.methods.userInfo(3, address),
+                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(3, address),
+                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(3)
             }
         })
 
@@ -425,7 +431,11 @@ export class Posi {
     async harvestBnbFarm(referrer) {
         return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(2, 0, referrer))
     }
-
+    
+    async harvestPbond001Pool(referrer) {
+        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(3, 0, referrer))
+    }    
+    
     async harvestNftPool() {
         return this.signAndSendTransaction(this.#contracts.nftStakingContract.methods.harvest())
     }
