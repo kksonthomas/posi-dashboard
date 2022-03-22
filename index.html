@@ -291,7 +291,7 @@
                                                     <!-- <button type="button"  class='btn btn-secondary disabled' disabled onclick=''>Meow</button>
                                                     <button type="button"  class='btn btn-warning disabled' disabled onclick=''>Unmeow</button> -->
                                                     <a href="https://app.position.exchange/pools" class='btn btn-secondary' target="_blank">Official page <i class='fa fa-external-link-alt'></i></a>
-                                                    <button type="button"  class='btn btn-success display-on-owning-address' onclick='app.harvestPbond001Pool()' disabled>Harvest</button>
+                                                    <button type="button"  class='btn btn-success display-on-owning-address' onclick='app.harvestPbond001Pool()'>Harvest</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -302,6 +302,114 @@
                     </div>
 
                     <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">PBOND2 Pool</div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Pending Rewards:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0"><span id="txtPbond002PoolPendingReward">-</span> POSI</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtPbond002PoolPendingReward'
+                                                                data-price-src-unit="POSI">?</span>)                    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Est. R.O.I. (1d):</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtPbond002PoolDailyROI">-</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (Duration: <span id="txtPbond002PoolSinceLastHarvest"></span>)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Staked Bonds:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtPbond002PoolStakedLPs">-</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtPbond002PoolStakedLPs'
+                                                            data-price-src-unit="PBOND_002">?</span>)
+                                                    </div>                    
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Next Harvest Until:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label text-lg" id="txtPbond002PoolRemainingTime">--:--:--</div>            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="btn-group col-12" role="group">
+                                                    <!-- <button type="button"  class='btn btn-secondary disabled' disabled onclick=''>Meow</button>
+                                                    <button type="button"  class='btn btn-warning disabled' disabled onclick=''>Unmeow</button> -->
+                                                    <a href="https://app.position.exchange/pools" class='btn btn-secondary' target="_blank">Official page <i class='fa fa-external-link-alt'></i></a>
+                                                    <button type="button"  class='btn btn-success display-on-owning-address' onclick='app.harvestPbond002Pool()'>Harvest</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">PBOND3 Pool</div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Pending Rewards:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0"><span id="txtPbond003PoolPendingReward">-</span> POSI</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtPbond003PoolPendingReward'
+                                                                data-price-src-unit="POSI">?</span>)                    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Est. R.O.I. (1d):</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtPbond003PoolDailyROI">-</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (Duration: <span id="txtPbond003PoolSinceLastHarvest"></span>)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Staked Bonds:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label pb-0" id="txtPbond003PoolStakedLPs">-</div>
+                                                    <div class="text-xs col-form-label pt-0">
+                                                        (~$<span class='price-reflector' data-price-src='#txtPbond003PoolStakedLPs'
+                                                            data-price-src-unit="PBOND_002">?</span>)
+                                                    </div>                    
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <label for="staticEmail" class="col-sm-5 col-form-label text-lg">Next Harvest Until:</label>
+                                                <div class="col-sm-7 text-right">
+                                                    <div class="font-weight-bold col-form-label text-lg" id="txtPbond003PoolRemainingTime">--:--:--</div>            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="btn-group col-12" role="group">
+                                                    <!-- <button type="button"  class='btn btn-secondary disabled' disabled onclick=''>Meow</button>
+                                                    <button type="button"  class='btn btn-warning disabled' disabled onclick=''>Unmeow</button> -->
+                                                    <a href="https://app.position.exchange/pools" class='btn btn-secondary' target="_blank">Official page <i class='fa fa-external-link-alt'></i></a>
+                                                    <button type="button"  class='btn btn-success display-on-owning-address' onclick='app.harvestPbond003Pool()'>Harvest</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-primary shadow h-100 py-2">
                                 <div class="card-body">

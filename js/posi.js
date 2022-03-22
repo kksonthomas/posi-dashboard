@@ -245,7 +245,17 @@ export class Posi {
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
-            }], "0xbe9ff181bfa9dd78191b81b23fd4ff774a3fb4f1"),
+            },
+            {
+                "name":"correctQuality",
+                "inputs":[
+                    {"internalType":"uint256","name":"grade","type":"uint256"},
+                    {"internalType":"uint256","name":"quality","type":"uint256"}
+                ],
+                "outputs":[{"internalType":"uint256","name":"correctQuality","type":"uint256"}],
+                "stateMutability":"pure",
+                "type":"function"
+            }], "0x6257229fa379afdbb91732091b5de32cdb759845"),
 
             nftMarketContract : new this.#web3.eth.Contract([{
                 "name":"markets",
@@ -344,6 +354,8 @@ export class Posi {
     async getPriceInfo() {        
         let data = await ky.get(this.constructor.POSI_API_URL + `price/prices`).json()
         data.prices["PBOND_001"] = 10;
+        data.prices["PBOND_002"] = data.prices["POSI"] * 13;
+        data.prices["PBOND_003"] = data.prices["POSI"] * 11;
         return data.prices;
     }
 
@@ -375,6 +387,16 @@ export class Posi {
                 userInfo: this.#contracts.posiStakingContract.methods.userInfo(3, address),
                 pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(3, address),
                 poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(3)
+            },
+            pbond002Pool: {
+                userInfo: this.#contracts.posiStakingContract.methods.userInfo(4, address),
+                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(4, address),
+                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(4)
+            },
+            pbond003Pool: {
+                userInfo: this.#contracts.posiStakingContract.methods.userInfo(5, address),
+                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(5, address),
+                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(5)
             }
         })
 
@@ -385,7 +407,11 @@ export class Posi {
 
     async getNftData (tokenId) {
         let data = await this.#contracts.nftFactoryContract.methods._gegoes(tokenId).call()
-        return data
+    
+        return await this.#multicall.call(data.map(x => { 
+            x.quality = this.#contracts.nftStakingContract.methods.correctQuality(x.grade, x.quality)
+            return x
+        }))
     }
 
     async getNftList (addressInfo) {
@@ -400,6 +426,11 @@ export class Posi {
                 isStaked: addressInfo.nft.holdingTokenList.indexOf(tokenId) === -1,
                 data: this.#contracts.nftFactoryContract.methods._gegoes(tokenId)
             }
+        }))
+
+        data = await this.#multicall.call(data.map(x => { 
+            x.data.quality = this.#contracts.nftStakingContract.methods.correctQuality(x.data.grade, x.data.quality)
+            return x
         }))
 
         return data.map(d => new PosiNFT(this, d.tokenId, d.isStaked, d.data, marketHistory ? marketHistory.data.rows.find(v => v.MarketListing.tokenId == d.tokenId && v.type == "purchase")?.MarketListing : []))
@@ -431,10 +462,18 @@ export class Posi {
     async harvestBnbFarm(referrer) {
         return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(2, 0, referrer))
     }
-    
+
     async harvestPbond001Pool(referrer) {
         return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(3, 0, referrer))
-    }    
+    }
+
+    async harvestPbond002Pool(referrer) {
+        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(4, 0, referrer))
+    }  
+    
+    async harvestPbond003Pool(referrer) {
+        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(5, 0, referrer))
+    }  
     
     async harvestNftPool() {
         return this.signAndSendTransaction(this.#contracts.nftStakingContract.methods.harvest())

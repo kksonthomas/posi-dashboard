@@ -186,6 +186,36 @@ export default class App {
                             $("#txtPbond001PoolDailyROI").text(pbond001DailyROI ? `~${Utils.toPercentage(pbond001DailyROI)}%` : "-")
                             $("#txtPbond001PoolSinceLastHarvest").text(pbond001DailyROI ? `${Utils.secondsToReadableTime(pbond001LastHarvestPassedSeconds)}` : "-")
 
+                            //pbond pool
+                            $("#txtPbond002PoolPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.pbond002Pool.pendingReward), true))
+                            $("#txtPbond002PoolStakedLPs").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.pbond002Pool.userInfo.amount), true))
+                            let pbond002PoolRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.pbond002Pool.userInfo.nextHarvestUntil))
+                            $("#txtPbond002PoolRemainingTime").text(pbond002PoolRemainingSeconds ? Utils.secondsToReadableTime(pbond002PoolRemainingSeconds) : "NOW")
+                            let pbond002DailyROI = null
+                            let pbond002LastHarvestPassedSeconds = 0
+                            if(this.priceInfo) {
+                                let pbond002PendingRewardPercentage = this.posi.uintToPrice(addressInfo.pbond002Pool.pendingReward) * this.priceInfo["POSI"] / this.posi.uintToPrice(addressInfo.pbond002Pool.userInfo.amount) / this.priceInfo["PBOND_002"]
+                                pbond002LastHarvestPassedSeconds = Utils.currentTimestamp() - (addressInfo.pbond002Pool.userInfo.nextHarvestUntil - addressInfo.pbond002Pool.poolInfo.harvestInterval)
+                                pbond002DailyROI = pbond002PendingRewardPercentage / pbond002LastHarvestPassedSeconds * 86400
+                            }
+                            $("#txtPbond002PoolDailyROI").text(pbond002DailyROI ? `~${Utils.toPercentage(pbond002DailyROI)}%` : "-")
+                            $("#txtPbond002PoolSinceLastHarvest").text(pbond002DailyROI ? `${Utils.secondsToReadableTime(pbond002LastHarvestPassedSeconds)}` : "-")
+
+                            //pbond pool
+                            $("#txtPbond003PoolPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.pbond003Pool.pendingReward), true))
+                            $("#txtPbond003PoolStakedLPs").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.pbond003Pool.userInfo.amount), true))
+                            let pbond003PoolRemainingSeconds = Utils.getRemainingSeconds(Utils.timestampToDate(addressInfo.pbond003Pool.userInfo.nextHarvestUntil))
+                            $("#txtPbond003PoolRemainingTime").text(pbond003PoolRemainingSeconds ? Utils.secondsToReadableTime(pbond003PoolRemainingSeconds) : "NOW")
+                            let pbond003DailyROI = null
+                            let pbond003LastHarvestPassedSeconds = 0
+                            if(this.priceInfo) {
+                                let pbond003PendingRewardPercentage = this.posi.uintToPrice(addressInfo.pbond003Pool.pendingReward) * this.priceInfo["POSI"] / this.posi.uintToPrice(addressInfo.pbond003Pool.userInfo.amount) / this.priceInfo["PBOND_003"]
+                                pbond003LastHarvestPassedSeconds = Utils.currentTimestamp() - (addressInfo.pbond003Pool.userInfo.nextHarvestUntil - addressInfo.pbond003Pool.poolInfo.harvestInterval)
+                                pbond003DailyROI = pbond003PendingRewardPercentage / pbond003LastHarvestPassedSeconds * 86400
+                            }
+                            $("#txtPbond003PoolDailyROI").text(pbond003DailyROI ? `~${Utils.toPercentage(pbond003DailyROI)}%` : "-")
+                            $("#txtPbond003PoolSinceLastHarvest").text(pbond003DailyROI ? `${Utils.secondsToReadableTime(pbond003LastHarvestPassedSeconds)}` : "-")
+
                             //nft card list
                             let i = nftList.length
                             $("#txtNftTotalAmount").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.nft.totalValue), true))
@@ -540,6 +570,42 @@ export default class App {
                 try {
                     await this.posi.harvestPbond001Pool(this.localReferrer)
                     AppUtils.showSuccessToast(`PBond-001 Pool harvested`)
+                } catch (ex) {
+                    AppUtils.showErrorToast(ex.message)
+                }
+                this.reload(false)
+            }
+        }
+    }
+
+    async harvestPbond002Pool() {
+        let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(this.addressInfo.pbond002Pool.userInfo.nextHarvestUntil))
+        if(remainSecond) {
+            AppUtils.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
+        } else {
+            let result = await AppUtils.showConfirm(`Harvest PBond-002 Pool?`, `referrer: ${this.localReferrer}`)
+            if(result.isConfirmed) {
+                try {
+                    await this.posi.harvestPbond002Pool(this.localReferrer)
+                    AppUtils.showSuccessToast(`PBond-002 Pool harvested`)
+                } catch (ex) {
+                    AppUtils.showErrorToast(ex.message)
+                }
+                this.reload(false)
+            }
+        }
+    }
+
+    async harvestPbond003Pool() {
+        let remainSecond = Utils.getRemainingSeconds(Utils.timestampToDate(this.addressInfo.pbond003Pool.userInfo.nextHarvestUntil))
+        if(remainSecond) {
+            AppUtils.showError(`Next Harvest availabe after ${Utils.secondsToReadableTime(remainSecond)}`)
+        } else {
+            let result = await AppUtils.showConfirm(`Harvest PBond-003 Pool?`, `referrer: ${this.localReferrer}`)
+            if(result.isConfirmed) {
+                try {
+                    await this.posi.harvestPbond003Pool(this.localReferrer)
+                    AppUtils.showSuccessToast(`PBond-003 Pool harvested`)
                 } catch (ex) {
                     AppUtils.showErrorToast(ex.message)
                 }
