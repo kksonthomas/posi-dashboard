@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Posi NFT Checker</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <link href="css/app.css" rel="stylesheet">
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 fixed-top shadow">
+
+                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="https://app.position.exchange/">
+                        <div class="sidebar-brand-icon rotate-n-15">
+                            <img src='https://app.position.exchange/img/position-coin.svg' />
+                        </div>
+                        <div class="sidebar-brand-text mx-3">Unoffical Posi NFT Checker</div>
+                    </a>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item no-arrow">
+                            <a href='https://poocoin.app/tokens/0x5ca42204cdaa70d5c773946e69de942b85ca6706' class='nav-link btn btn-primary' target='_blank'>
+                                <img src="https://app.position.exchange/img/position-coin.svg" class="mr-1"> $<span class='price-display' data-price-src-value="1" data-price-src-unit="POSI" data-price-dp="4">-</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <form class="mt-2 mb-2" method="get" action="">
+                        <div class="input-group">
+                            <input id="txtTokenStart" name='a' type="number" min="1000001" class="form-control border-0 small" placeholder="Enter Token Id Here" aria-label="Search" aria-describedby="basic-addon2">
+                            <span class="ml-4 mr-4"> - </span>
+                            <input id="txtTokenEnd" name='b' type="number" min="1000001" class="form-control border-0 small" placeholder="Enter Token Id Here" aria-label="Search" aria-describedby="basic-addon2">
+                        </div>
+                        <button class="btn btn-primary btn-block" type="submit">
+                            <i class="fas fa-search fa-sm"></i> Search
+                        </button>
+                    </form>
+
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-2">Posi NFT Checker - <span id="txtTargetToken"></span> (Latest: <span id="txtLatestTokenId"></span>)</h1>
+
+                    
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h3 class="m-0 font-weight-bold text-primary col-6 float-left">NFT Info</h3>
+                            <div class="col-6 float-right">
+                                <button type="button" class="btn btn-outline-success float-right" onclick='app.nftDataTable.ajax.reload(null, false)'>Refresh</button>
+                                <button type="button" class="btn btn-outline-warning float-right mr-1" onclick='app.nftTableClearFilters()'>Clear filters</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- DataTales Example -->
+                            <nav>
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    <a class="nav-item nav-link active" id="nav-nft-table-tab" data-toggle="tab" href="#nav-nft-table" role="tab"
+                                        aria-controls="nav-nft-table" aria-selected="true">Records</a>
+                                    <a class="nav-item nav-link" id="nav-nft-charts-tab" data-toggle="tab" href="#nav-nft-charts" role="tab"
+                                        aria-controls="nav-nft-charts" aria-selected="false">Charts</a>
+                                </div>
+                            </nav>
+                            <div class="tab-content" id="nav-tabContent">
+                                <div class="tab-pane fade show active" id="nav-nft-table" role="tabpanel" aria-labelledby="nav-nft-table-tab">
+                                    <div class="table-responsive mt-4">
+                                        <table class="table table-bordered" id="posiNFT-table" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th class="tokenIdCol">#</th>
+                                                    <th class="gradeTitleCol">Name</th>
+                                                    <th class="gradeCol">Grade</th>
+                                                    <th class="parValueCol">Par Value (POSI)</th>
+                                                    <th class="miningPowerCol">Mining Power (POSI)</th>
+                                                    <th class="efficiencyCol">Efficiency(%)</th>
+                                                    <th class="unlockDateCol">Unlock Date</th>
+                                                    <th class="isUnlockedCol">Unlocked</th>
+                                                    <th class="isDecomposedCol">Decomposed</th>
+                                                    <th class="actionsCol">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="nav-nft-charts" role="tabpanel" aria-labelledby="nav-nft-charts-tab">
+                                    <div class="row mt-4">
+                                        <div class="col-6">
+                                            <canvas id="chartNftUnlockedValue" width="400" height="300"></canvas>
+                                        </div>
+                                        <div class="col-6">
+                                            <canvas id="chartUnlockedNftDistribution" width="400" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    
+                    
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; KKson Software 2021</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1-rc.0/web3.min.js" integrity="sha512-+4Gl8sbHe5qD5EQiPtIva4be9TwUmmzgYJUdGbhsLYNegQw4Quda/4QdZpJzx8cHq2s1F4PoIpAnERQ0hHTcNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script> 
+    <script type="module">
+        import Utils from './js/utils.js'
+        import AppUtils from './js/app-utils.js'
+        import App from './js/nft-checker-app.js'
+
+        window.AppUtils = AppUtils;
+        window.Utils = Utils;
+        
+        window.app = new App()
+        $(() => {
+            app.start()
+        })
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SM91SHH3PR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SM91SHH3PR');
+</script>
+</body>
+
+</html>

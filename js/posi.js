@@ -3,10 +3,10 @@ import Multicall from './multicall.js'
 import ky from 'https://cdnjs.cloudflare.com/ajax/libs/ky/0.20.0/index.min.js'
 
 export class Posi {
-    #contracts;
+    contracts;
     #userAddress;
     #web3 //read only
-    #multicall
+    multicall
 
     static POSI_API_URL = 'https://api.position.exchange/'
 
@@ -23,9 +23,9 @@ export class Posi {
     }
 
     constructor() {
-        this.#web3 = new Web3('https://bsc-dataseed.binance.org:443/')
-        // this.#web3 = new Web3('https://bsc-dataseed1.ninicoin.io:443/')
-        this.#multicall = new Multicall(this.#web3, '0x1Ee38d535d541c55C9dae27B12edf090C608E6Fb')
+        // this.#web3 = new Web3('https://bsc-dataseed.binance.org:443/')
+        this.#web3 = new Web3('https://bsc-dataseed1.ninicoin.io:443/')
+        this.multicall = new Multicall(this.#web3, '0x1Ee38d535d541c55C9dae27B12edf090C608E6Fb')
         this.#initContracts()
     }
 
@@ -38,11 +38,11 @@ export class Posi {
     }
 
     get contracts() {
-        return this.#contracts
+        return this.contracts
     }
 
     get multicall() {
-        return this.#multicall
+        return this.multicall
     }
     
     uintToPrice(v) {
@@ -118,7 +118,7 @@ export class Posi {
     }
 
     #initContracts() {
-        this.#contracts = {
+        this.contracts = {
             posiTokenContract: new this.#web3.eth.Contract([{
                 "name": "balanceOf",
                 "inputs": [{"internalType": "address","name": "owner","type": "address"}],
@@ -360,43 +360,43 @@ export class Posi {
     }
 
     async getAddressInfo(address) {
-        let data = await this.#multicall.call({
+        let data = await this.multicall.call({
             address: address,
-            balance: this.#contracts.posiTokenContract.methods.balanceOf(address),
-            referrer: this.#contracts.posiReferralContract.methods.getReferrer(address),
+            balance: this.contracts.posiTokenContract.methods.balanceOf(address),
+            referrer: this.contracts.posiReferralContract.methods.getReferrer(address),
             busdFarming: {
-                userInfo: this.#contracts.posiStakingContract.methods.userInfo(0, address),
-                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(0, address),
-                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(0)
+                userInfo: this.contracts.posiStakingContract.methods.userInfo(0, address),
+                pendingReward: this.contracts.posiStakingContract.methods.pendingPosition(0, address),
+                poolInfo: this.contracts.posiStakingContract.methods.poolInfo(0)
             },
             bnbFarming: {
-                userInfo: this.#contracts.posiStakingContract.methods.userInfo(2, address),
-                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(2, address),
-                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(2)
+                userInfo: this.contracts.posiStakingContract.methods.userInfo(2, address),
+                pendingReward: this.contracts.posiStakingContract.methods.pendingPosition(2, address),
+                poolInfo: this.contracts.posiStakingContract.methods.poolInfo(2)
             },
             nft: {
-                harvestInterval: this.#contracts.nftStakingContract.methods._harvestInterval(),
-                totalMiningPowerStaked: this.#contracts.nftStakingContract.methods._weightBalances(address),
-                totalValue: this.#contracts.nftStakingContract.methods._degoBalances(address),
-                pendingReward: this.#contracts.nftStakingContract.methods.earned(address),
-                nextHarvestUntil: this.#contracts.nftStakingContract.methods._nextHarvestUntil(address),
-                stakedTokenList: this.#contracts.nftStakingContract.methods.getPlayerIds(address),
-                holdingTokenList: this.#contracts.nftTokenContract.methods.tokensOfOwner(address)
+                harvestInterval: this.contracts.nftStakingContract.methods._harvestInterval(),
+                totalMiningPowerStaked: this.contracts.nftStakingContract.methods._weightBalances(address),
+                totalValue: this.contracts.nftStakingContract.methods._degoBalances(address),
+                pendingReward: this.contracts.nftStakingContract.methods.earned(address),
+                nextHarvestUntil: this.contracts.nftStakingContract.methods._nextHarvestUntil(address),
+                stakedTokenList: this.contracts.nftStakingContract.methods.getPlayerIds(address),
+                holdingTokenList: this.contracts.nftTokenContract.methods.tokensOfOwner(address)
             },
             pbond001Pool: {
-                userInfo: this.#contracts.posiStakingContract.methods.userInfo(3, address),
-                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(3, address),
-                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(3)
+                userInfo: this.contracts.posiStakingContract.methods.userInfo(3, address),
+                pendingReward: this.contracts.posiStakingContract.methods.pendingPosition(3, address),
+                poolInfo: this.contracts.posiStakingContract.methods.poolInfo(3)
             },
             pbond002Pool: {
-                userInfo: this.#contracts.posiStakingContract.methods.userInfo(4, address),
-                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(4, address),
-                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(4)
+                userInfo: this.contracts.posiStakingContract.methods.userInfo(4, address),
+                pendingReward: this.contracts.posiStakingContract.methods.pendingPosition(4, address),
+                poolInfo: this.contracts.posiStakingContract.methods.poolInfo(4)
             },
             pbond003Pool: {
-                userInfo: this.#contracts.posiStakingContract.methods.userInfo(5, address),
-                pendingReward: this.#contracts.posiStakingContract.methods.pendingPosition(5, address),
-                poolInfo: this.#contracts.posiStakingContract.methods.poolInfo(5)
+                userInfo: this.contracts.posiStakingContract.methods.userInfo(5, address),
+                pendingReward: this.contracts.posiStakingContract.methods.pendingPosition(5, address),
+                poolInfo: this.contracts.posiStakingContract.methods.poolInfo(5)
             }
         })
 
@@ -406,10 +406,10 @@ export class Posi {
     }
 
     async getNftData (tokenId) {
-        let data = await this.#contracts.nftFactoryContract.methods._gegoes(tokenId).call()
+        let data = await this.contracts.nftFactoryContract.methods._gegoes(tokenId).call()
     
-        return await this.#multicall.call(data.map(x => { 
-            x.quality = this.#contracts.nftStakingContract.methods.correctQuality(x.grade, x.quality)
+        return await this.multicall.call(data.map(x => { 
+            x.quality = this.contracts.nftStakingContract.methods.correctQuality(x.grade, x.quality)
             return x
         }))
     }
@@ -421,15 +421,15 @@ export class Posi {
         try {
             marketHistory = await ky.get(this.constructor.POSI_API_URL + `marketplace/myMarketHistory?address=${addressInfo.address}&perPage=10000&page=1`, {timeout:5000}).json()
         } catch(ex) {}
-        let data = await this.#multicall.call(tokenIdList.map(tokenId => { return {
+        let data = await this.multicall.call(tokenIdList.map(tokenId => { return {
                 tokenId: tokenId,
                 isStaked: addressInfo.nft.holdingTokenList.indexOf(tokenId) === -1,
-                data: this.#contracts.nftFactoryContract.methods._gegoes(tokenId)
+                data: this.contracts.nftFactoryContract.methods._gegoes(tokenId)
             }
         }))
 
-        data = await this.#multicall.call(data.map(x => { 
-            x.data.quality = this.#contracts.nftStakingContract.methods.correctQuality(x.data.grade, x.data.quality)
+        data = await this.multicall.call(data.map(x => { 
+            x.data.quality = this.contracts.nftStakingContract.methods.correctQuality(x.data.grade, x.data.quality)
             return x
         }))
 
@@ -437,46 +437,46 @@ export class Posi {
     }
 
     async stakeNFT(gegoId) {
-        return this.signAndSendTransaction(this.#contracts.nftStakingContract.methods.stake(gegoId))
+        return this.signAndSendTransaction(this.contracts.nftStakingContract.methods.stake(gegoId))
     }
 
     async safeTransferNFT(from, to, tokenId) {
-        return this.signAndSendTransaction(this.#contracts.nftTokenContract.methods.safeTransferFrom(from, to, tokenId))
+        return this.signAndSendTransaction(this.contracts.nftTokenContract.methods.safeTransferFrom(from, to, tokenId))
     }
 
     async unstakeNFT(gegoId) {
-        return this.signAndSendTransaction(this.#contracts.nftStakingContract.methods.unstake(gegoId))
+        return this.signAndSendTransaction(this.contracts.nftStakingContract.methods.unstake(gegoId))
     }
 
     async decomposeNFT(tokenId) {
-        return this.signAndSendTransaction(this.#contracts.nftFactoryContract.methods.burn(tokenId))
+        return this.signAndSendTransaction(this.contracts.nftFactoryContract.methods.burn(tokenId))
     }
     async castNFT(amount) {
-        return this.signAndSendTransaction(this.#contracts.nftFactoryContract.methods.mint([this.priceToUint256(amount), 0, 0, 0, 0]))
+        return this.signAndSendTransaction(this.contracts.nftFactoryContract.methods.mint([this.priceToUint256(amount), 0, 0, 0, 0]))
     }
 
     async harvestBusdFarm(referrer) {
-        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(0, 0, referrer))
+        return this.signAndSendTransaction(this.contracts.posiStakingContract.methods.deposit(0, 0, referrer))
     }
 
     async harvestBnbFarm(referrer) {
-        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(2, 0, referrer))
+        return this.signAndSendTransaction(this.contracts.posiStakingContract.methods.deposit(2, 0, referrer))
     }
 
     async harvestPbond001Pool(referrer) {
-        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(3, 0, referrer))
+        return this.signAndSendTransaction(this.contracts.posiStakingContract.methods.deposit(3, 0, referrer))
     }
 
     async harvestPbond002Pool(referrer) {
-        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(4, 0, referrer))
+        return this.signAndSendTransaction(this.contracts.posiStakingContract.methods.deposit(4, 0, referrer))
     }  
     
     async harvestPbond003Pool(referrer) {
-        return this.signAndSendTransaction(this.#contracts.posiStakingContract.methods.deposit(5, 0, referrer))
+        return this.signAndSendTransaction(this.contracts.posiStakingContract.methods.deposit(5, 0, referrer))
     }  
     
     async harvestNftPool() {
-        return this.signAndSendTransaction(this.#contracts.nftStakingContract.methods.harvest())
+        return this.signAndSendTransaction(this.contracts.nftStakingContract.methods.harvest())
     }
 }
 
