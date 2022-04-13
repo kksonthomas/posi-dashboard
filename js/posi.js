@@ -517,18 +517,20 @@ export class PosiNFT {
 
     static getGradeTitle(grade) {
         switch (grade = ''.concat(grade)) {
-          case '1':
-            return 'Farmer'
-          case '2':
-            return 'Janitor'
-          case '3':
-            return 'Accountant'
-          case '4':
-            return 'Engineer'
-          case '5':
-            return 'Pilot'
-          case '6':
-            return 'Boss'
+            case '1':
+                return 'Farmer'
+            case '2':
+                return 'Janitor'
+            case '3':
+                return 'Accountant'
+            case '4':
+                return 'Engineer'
+            case '5':
+                return 'Pilot'
+            case '6':
+                return 'Boss'
+            default:
+                return ''
         }
     }
 

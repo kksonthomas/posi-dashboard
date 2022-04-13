@@ -39,7 +39,7 @@ export default class Multicall {
         }], contractAddress)
     }
 
-    async call(input) {
+    async call(input, splitNum = 1000) {
         let flattenInput = this.#flattenObject(input)
         
         let methodKeyList = Object.keys(flattenInput).filter((key, index) => {
@@ -53,7 +53,25 @@ export default class Multicall {
             ]
         })
 
-        let {returnData} = await this.contract.methods.aggregate(calls).call()
+        let callArray = [];
+
+        if(splitNum) {
+            while( calls.length ) {
+                callArray.push( calls.splice(0, splitNum) );
+            }
+        } else {
+            callArray = [calls]
+        }
+
+        let returnedDataArray = await Promise.all(callArray.map(c => {
+            return this.contract.methods.aggregate(c).call()
+        }))
+        let returnData = returnedDataArray.map(x => {
+            return x.returnData
+        }).flat(1)
+
+
+        // let {returnData} = await this.contract.methods.aggregate(calls).call()
         let decodedData = returnData.map((encodedHex, index) => {
             let method = methodList[index]
             let decoded = this.web3.eth.abi.decodeParameters(method._method.outputs, encodedHex);
