@@ -6,6 +6,7 @@ import AppUtils from './app-utils.js'
 export default class App {
     constructor() {
         this.posi = new Posi();
+        // this.posi = new Posi('https://bsc-dataseed1.ninicoin.io:443/');
         this.priceInfo = {};
         this.nftDataTable;
     }
@@ -131,62 +132,97 @@ export default class App {
                             return x
                         })).then(data => {
                             let nftList = data.map(d => new PosiNFT(app.posi, d.tokenId, false, d.data, []))
-            
-                            callback({data: nftList.filter(nft => nft.grade > 0)})
+                            nftList.filter(nft => nft.grade > 0)
+                            callback({data: nftList})
                             this.updatePriceInfo()        
             
-                            //charts
-                            let timestampNow = Date.now() / 1000
-                            let todayString = Utils.datetimeToDate(new Date())
-                            let maxUnlockTimestamp = Math.max(...nftList.map(n => n.unlockDate)) / 1000
-                            let maxUnlockDate = Utils.dateAddDay(new Date(maxUnlockTimestamp * 1000), 1)
-                            let maxUnlockDateString = Utils.datetimeToDate(maxUnlockDate)
-                            let currentDateString = todayString;
-                            let currentDate = new Date()
-                            let chartNftUnlockedValueLabels = []
-                            let chartNftUnlockedValueData = []
-                            if(timestampNow < maxUnlockTimestamp) {
-                                while(currentDateString != maxUnlockDateString) {
-                                    currentDateString = Utils.datetimeToDate(currentDate)
-                                    chartNftUnlockedValueLabels.push(currentDateString)
-                                    let sumAmt = 0
-                                    nftList.map(n =>  sumAmt += n.unlockDate < currentDate.getTime() ? n.amount : 0)
-                                    chartNftUnlockedValueData.push(sumAmt)
-                                    currentDate.setDate(currentDate.getDate()+1)
-                                }
-                            } else {
-                                chartNftUnlockedValueLabels.push(todayString)
-                                let sumAmt = 0
-                                nftList.map(n => sumAmt += n.amount)
-                                chartNftUnlockedValueData.push(sumAmt)
-                            }
+                            // //charts
+                            // let timestampNow = Date.now() / 1000
+                            // let todayString = Utils.datetimeToDate(new Date())
+                            // let maxUnlockTimestamp = Math.max(...nftList.map(n => n.unlockDate)) / 1000
+                            // let maxUnlockDate = Utils.dateAddDay(new Date(maxUnlockTimestamp * 1000), 1)
+                            // let maxUnlockDateString = Utils.datetimeToDate(maxUnlockDate)
+                            // let currentDateString = todayString;
+                            // let currentDate = new Date()
+                            // let chartNftUnlockedValueLabels = []
+                            // let chartNftUnlockedValueData = []
+                            // if(timestampNow < maxUnlockTimestamp) {
+                            //     while(currentDateString != maxUnlockDateString) {
+                            //         currentDateString = Utils.datetimeToDate(currentDate)
+                            //         chartNftUnlockedValueLabels.push(currentDateString)
+                            //         let sumAmt = 0
+                            //         nftList.map(n =>  sumAmt += n.unlockDate < currentDate.getTime() ? n.amount : 0)
+                            //         chartNftUnlockedValueData.push(sumAmt)
+                            //         currentDate.setDate(currentDate.getDate()+1)
+                            //     }
+                            // } else {
+                            //     chartNftUnlockedValueLabels.push(todayString)
+                            //     let sumAmt = 0
+                            //     nftList.map(n => sumAmt += n.amount)
+                            //     chartNftUnlockedValueData.push(sumAmt)
+                            // }
             
-                            if(!window.chartjsNftUnlockedValue) {
-                                window.chartjsNftUnlockedValue = new Chart(document.getElementById('chartNftUnlockedValue').getContext('2d'), {
-                                    type: 'line',
+                            // if(!window.chartjsNftUnlockedValue) {
+                            //     window.chartjsNftUnlockedValue = new Chart(document.getElementById('chartNftUnlockedValue').getContext('2d'), {
+                            //         type: 'line',
+                            //         data: {
+                            //             labels: [],
+                            //             datasets: [{
+                            //                 label: 'Total Unlocked Value @ date',
+                            //                 data: [],
+                            //                 borderColor: ['rgba(255, 255, 255, 1)'],
+                            //                 backgroundColor:  ['rgba(255, 255, 255, 0.5)'],
+                            //             }]
+                            //         },
+                            //         options: {
+                            //             scales: {
+                            //                 y: {
+                            //                     beginAtZero: false
+                            //                 }
+                            //             }
+                            //         }
+                            //     });
+                            // }
+                            // window.chartjsNftUnlockedValue.data.labels = chartNftUnlockedValueLabels;
+                            // window.chartjsNftUnlockedValue.data.datasets.forEach((dataset) => {
+                            //     dataset.data = chartNftUnlockedValueData
+                            // });
+                            // window.chartjsNftUnlockedValue.update()
+
+                            //charts
+                            let chartNftDistrubutionLabels = []
+                            let chartNftDistrubutionData = []
+                            for(let grade=1; grade<=6; grade++) {
+                                chartNftDistrubutionLabels.push(`Grade ${grade}`)
+                                chartNftDistrubutionData.push(nftList.filter(x => x.grade == grade).length)
+                            }
+                                        
+                            if(!window.chartjsNftDistribution) {
+                                window.chartjsNftDistribution = new Chart(document.getElementById('chartNftDistribution').getContext('2d'), {
+                                    type: 'doughnut',
                                     data: {
                                         labels: [],
                                         datasets: [{
-                                            label: 'Total Unlocked Value @ date',
+                                            label: 'NFT distubution',
                                             data: [],
                                             borderColor: ['rgba(255, 255, 255, 1)'],
-                                            backgroundColor:  ['rgba(255, 255, 255, 0.5)'],
+                                            backgroundColor:  [
+                                                '#d28a1b',
+                                                '#b9d6da',
+                                                '#38c52a',
+                                                '#c06ed5',
+                                                '#0385c5',
+                                                '#f3d907'
+                                            ],
                                         }]
-                                    },
-                                    options: {
-                                        scales: {
-                                            y: {
-                                                beginAtZero: false
-                                            }
-                                        }
                                     }
                                 });
                             }
-                            window.chartjsNftUnlockedValue.data.labels = chartNftUnlockedValueLabels;
-                            window.chartjsNftUnlockedValue.data.datasets.forEach((dataset) => {
-                                dataset.data = chartNftUnlockedValueData
+                            window.chartjsNftDistribution.data.labels = chartNftDistrubutionLabels;
+                            window.chartjsNftDistribution.data.datasets.forEach((dataset) => {
+                                dataset.data = chartNftDistrubutionData
                             });
-                            window.chartjsNftUnlockedValue.update()
+                            window.chartjsNftDistribution.update()
                         })    
                     })
         
@@ -266,6 +302,15 @@ export default class App {
                         "render" : (v, t, d) => {
                             let html = ''
                             html += `<a href="https://bscscan.com/token/0xeca16df8d11d3a160ff7a835a8dd91e0ae296489?a=${d.tokenId}" class='btn btn-info' target="_blank">BscScan <i class='fa fa-external-link-alt'></i></a>`
+                            return html
+                        }
+                    },
+                    {
+                        "targets": "metaDataCol",
+                        "data": null,
+                        "render" : (v, t, d) => {
+                            let html = ''
+                            html += `${d.tLevel}/${d.ruleId}/${d.nftType}`
                             return html
                         }
                     }

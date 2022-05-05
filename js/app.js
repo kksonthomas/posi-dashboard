@@ -129,6 +129,10 @@ export default class App {
                         this.posi.getNftList(addressInfo).then(nftList => {
                             $("#txtPosiBalance").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.balance), true))
 
+                            //vaults 
+                            $("#txtPosiBNBVaultBalance").text(Posi.roundCurrency(this.posi.uintToPrice(addressInfo.posiBnbVault.userInfo.pendingRewards) * this.priceInfo.POSI, true))
+                            $("#txtPosiBusdVaultBalance").text(Posi.roundCurrency(this.posi.uintToPrice(addressInfo.posiBusdVault.userInfo.pendingRewards) * this.priceInfo.POSI, true))
+                            
                             //busd posi farming
                             $("#txtBusdFarmingPendingReward").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.busdFarming.pendingReward), true))
                             $("#txtBusdFarmingStakedLPs").text( Posi.roundCurrency(this.posi.uintToPrice(addressInfo.busdFarming.userInfo.amount), true))

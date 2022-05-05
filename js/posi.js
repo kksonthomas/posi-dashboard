@@ -22,9 +22,11 @@ export class Posi {
         });
     }
 
-    constructor() {
-        // this.#web3 = new Web3('https://bsc-dataseed.binance.org:443/')
-        this.#web3 = new Web3('https://bsc-dataseed1.ninicoin.io:443/')
+    constructor(rpcUrl=null) {
+        if(!rpcUrl) {
+            rpcUrl = 'https://bsc-dataseed.binance.org:443/'
+        }
+        this.#web3 = new Web3(rpcUrl)
         this.multicall = new Multicall(this.#web3, '0x1Ee38d535d541c55C9dae27B12edf090C608E6Fb')
         this.#initContracts()
     }
@@ -347,7 +349,33 @@ export class Posi {
                 "outputs":[],
                 "stateMutability":"nonpayable",
                 "type":"function"
-            }], '0x9D95b5eA6C8f678B7486Be7a6331ec10A54156BD')
+            }], '0x9D95b5eA6C8f678B7486Be7a6331ec10A54156BD'),
+            posiBnbVaultContract : new this.#web3.eth.Contract([{
+                "name":"userInfo",
+                "inputs":[{"internalType":"address","name":"","type":"address"}],
+                "outputs":[
+                    {"internalType":"uint256","name":"amount","type":"uint256"},
+                    {"internalType":"uint128","name":"rewards","type":"uint128"},
+                    {"internalType":"uint128","name":"latestHarvestBlockNumber","type":"uint128"},
+                    {"internalType":"uint128","name":"pendingRewardPerTokenPaid","type":"uint128"},
+                    {"internalType":"uint128","name":"pendingRewards","type":"uint128"}
+                ],
+                "stateMutability":"view",
+                "type":"function"
+            }], '0xC1742A30b7469f49f37239B1c2905876821700e8'),
+            posiBusdVaultContract : new this.#web3.eth.Contract([{
+                "name":"userInfo",
+                "inputs":[{"internalType":"address","name":"","type":"address"}],
+                "outputs":[
+                    {"internalType":"uint256","name":"amount","type":"uint256"},
+                    {"internalType":"uint128","name":"rewards","type":"uint128"},
+                    {"internalType":"uint128","name":"latestHarvestBlockNumber","type":"uint128"},
+                    {"internalType":"uint128","name":"pendingRewardPerTokenPaid","type":"uint128"},
+                    {"internalType":"uint128","name":"pendingRewards","type":"uint128"}
+                ],
+                "stateMutability":"view",
+                "type":"function"
+            }], '0xf35848441017917a034589BfbEc4B3783BB39cb2')
         }
     }
 
@@ -397,6 +425,12 @@ export class Posi {
                 userInfo: this.contracts.posiStakingContract.methods.userInfo(5, address),
                 pendingReward: this.contracts.posiStakingContract.methods.pendingPosition(5, address),
                 poolInfo: this.contracts.posiStakingContract.methods.poolInfo(5)
+            },
+            posiBnbVault: {
+                userInfo: this.contracts.posiBnbVaultContract.methods.userInfo(address)
+            },
+            posiBusdVault: {
+                userInfo: this.contracts.posiBusdVaultContract.methods.userInfo(address)
             }
         })
 
