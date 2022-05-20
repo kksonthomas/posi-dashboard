@@ -8,7 +8,7 @@ export class Posi {
     #web3 //read only
     multicall
 
-    static POSI_API_URL = 'https://api.position.exchange/'
+    static POSI_API_URL = 'https://apex.position.exchange/'
 
     static {
         this.currencyFormatter = new Intl.NumberFormat('en-US', {
